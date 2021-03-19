@@ -3,7 +3,7 @@ Helsingin Yliopisto / Aineopintojen harjoitustyö: Tietokantasovellus -kurssin h
 
 # Aiheen kuvaus
 
-Herokussa pyörivä verkkosovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja oppilaat suorittaa. Sovellukseen kirjautuminen tapahtuu molemmille käyttäjärooleille (opettaja ja oppilas) samalla tavalla. Muuten sovelluksen näkymät ja toiminnot on jaettu käyttäjärooleittain.
+Verkkokurssisovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja oppilaat suorittaa. Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden oppilaiden määrän per kurssi sekä kurssia suorittavan oppilaan nimen, suoritetut tehtävät ja tiedon siitä, onko oppilas päässyt kurssin läpi. Myös oppilaat näkevät vastaavia tietoja suoriutumisestaan kursseilla, joille he ovat ilmoittautuneet. Sovellukseen kirjautuminen tapahtuu molemmille käyttäjärooleille (opettaja ja oppilas) samalla tavalla. Muuten sovelluksen näkymät ja toiminnot on jaettu käyttäjärooleittain.
 
 # Sovelluksen rakenne ja ominaisuudet
 
@@ -45,6 +45,7 @@ Kuvataan seuraavaksi näiden näkymien ominaisuuksia käyttäjärooleittain.
 - Opettaja voi muokata kurssin läpipääsyrajaa (oletus 70% tehtävien määrästä)
 - Opettaja näkee kurssin Johdanto -osion (kurssin tiedot, ohjeet yms.)
 - Opettaja voi muokata kurssin Johdanto -osiota
+- Opettaja näkee kurssin valmiin materiaalin ja tehtävät
 - Opettaja voi lisätä kurssiin materiaalia (teksti, kuva, linkit)
 - Opettaja voi lisätä kurssiin tehtäviä (monivalinta ja tekstikenttä johon tulee kirjoittaa oikea vastaus)
 - Opettaja voi lisätä tehtäviin palautteen, joka näkyy kun tehtävään on vastattu (riippuu vastauksen oikeellisuudesta)
