@@ -1,6 +1,10 @@
 # Verkkokurssisovellus-Tsoha2021
 Helsingin Yliopisto / Aineopintojen harjoitustyö: Tietokantasovellus -kurssin harjoitustyö / kevät2021
 
+# Sovelluksen nykyinen tilanne ja testaus Herokussa
+
+Ikävä kyllä sovelluksen toteuttaminen ei ole edennyt tavoiteaikataulun mukaisesti. Olen vielä opettelemassa kurssin materiaalia, eli en ole saanut vielä toimivaa pohjaa työlleni. Näin ollen Herokustakaan ei löydy mitään testattavaa.
+
 # Aiheen kuvaus
 
 Verkkokurssisovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja oppilaat suorittaa. Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden oppilaiden määrän per kurssi sekä kurssia suorittavan oppilaan nimen, suoritetut tehtävät ja tiedon siitä, onko oppilas päässyt kurssin läpi. Myös oppilaat näkevät vastaavia tietoja suoriutumisestaan kursseilla, joille he ovat ilmoittautuneet. Sovellukseen kirjautuminen tapahtuu molemmille käyttäjärooleille (opettaja ja oppilas) samalla tavalla. Muuten sovelluksen näkymät ja toiminnot on jaettu käyttäjärooleittain.
