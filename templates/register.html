@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Rekisteröinti{% endblock %}
+{% block content %}
+
+
+<form action="/register" method="post">
+    <p>Luo uusi tunnus</p>
+    Tunnus: <input type="text" name="username">
+    <p>
+    Salasana: <input type="password" name="password">
+    <p>
+    Valitse käyttäjätyyppi:
+    <p>
+    <input type="radio" name="usertype" value="0"> Opiskelija
+    <input type="radio" name="usertype" value="1"> Opettaja
+    <p>
+    <input type="submit" value="Luo tunnus">
+</form>
+
+
+
+{% endblock %}

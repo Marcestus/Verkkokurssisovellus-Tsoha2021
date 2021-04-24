@@ -1,18 +1,37 @@
 {% extends "layout.html" %}
-{% block title %}Etusivu{% endblock %}
+{% block title %}Kirjautuminen{% endblock %}
 {% block content %}
 
 
 
-{% if session.username %}
+{% if session.user_id %}
 
-<p> käyttäjän etusivu (opettaja tai oppilas) </p>
+{% if session.usertype == 0 %}
+
+<p> Käyttäjän etusivu (opiskelija-versio) </p>
+
+{% endif %}
+
+{% if session.usertype == 1 %}
+
+<p> Käyttäjän etusivu (opettaja-versio) </p>
+
+{% endif %}
+
+
 
 {% else %}
 
-<p> kirjautuminen </p>
+<form action="/login" method="post">
+    <p>Kirjaudu sisään</p>
+    Tunnus: <input type="text" name="username">
+    <p>
+    Salasana: <input type="password" name="password">
+    <p>
+    <input type="submit" value="Kirjaudu">
+</form>
 
-<p> tunnusten luominen </p>
+Jos sinulla ei ole tunnuksia, voit luoda ne <a href="/register">tästä</a>
 
 {% endif %}
 
