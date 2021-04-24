@@ -8,13 +8,39 @@
 
 {% if session.usertype == 0 %}
 
-<p> Käyttäjän etusivu (opiskelija-versio) </p>
+<p>Kurssit, joille olet ilmoittautunut:</p>
+
+<ul>
+    {% for users_course in users_courses %}
+    <li>{{ users_course[0] }}</li>
+    {% endfor %}
+</ul>
+
+<p>Muut avoimet kurssit:</p>
+<ul>
+    {% for open_course in open_courses %}
+    <li>{{ open_course[0] }}</li>
+    {% endfor %}
+</ul>
 
 {% endif %}
 
 {% if session.usertype == 1 %}
 
-<p> Käyttäjän etusivu (opettaja-versio) </p>
+<p>Omat kurssit:</p>
+
+<ul>
+    {% for owned_course in owned_courses %}
+    <li>{{ owned_course[0] }}</li>
+    {% endfor %}
+</ul>
+
+<form action="/newcourse" method="post">
+    <p>Luo uusi kurssi</p>
+    Kurssin nimi: <input type="text" name="coursename">
+    <p>
+    <input type="submit" value="Luo kurssi">
+</form>
 
 {% endif %}
 

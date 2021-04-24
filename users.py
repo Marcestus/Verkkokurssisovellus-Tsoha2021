@@ -1,5 +1,4 @@
 from db import db
-from os import urandom
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -35,3 +34,6 @@ def register(username,password,usertype):
 
 def user_id():
     return session.get("user_id",0)
+
+def get_usertype():
+    return session.get("usertype")
