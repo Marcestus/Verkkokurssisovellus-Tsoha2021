@@ -1,6 +1,21 @@
-<!DOCTYPE html>
-<meta name='viewport' content='width=device-width, initial-scale=1'>
+{% extends "layout.html" %}
+{% block title %}Etusivu{% endblock %}
+{% block content %}
 
-<div class="header">
-    <h1>Tervetuloa verkkokurssisovellukseen!</h1>
-</div>
+
+
+{% if session.username %}
+
+<p> käyttäjän etusivu (opettaja tai oppilas) </p>
+
+{% else %}
+
+<p> kirjautuminen </p>
+
+<p> tunnusten luominen </p>
+
+{% endif %}
+
+
+
+{% endblock %}
