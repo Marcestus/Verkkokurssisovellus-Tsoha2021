@@ -8,32 +8,38 @@
 
 {% if session.usertype == 0 %}
 
+<hr>
+
 <p>Kurssit, joille olet ilmoittautunut:</p>
 
-<ul>
-    {% for users_course in users_courses %}
-    <li>{{ users_course[0] }}</li>
-    {% endfor %}
-</ul>
+{% for users_course in users_courses %}
+Kurssi: <a href="/course/{{ users_course[0] }}">{{ users_course[1] }}</a> <br>
+{% endfor %}
+
+<hr>
 
 <p>Muut avoimet kurssit:</p>
-<ul>
-    {% for open_course in open_courses %}
-    <li>{{ open_course[0] }}</li>
-    {% endfor %}
-</ul>
+
+{% for open_course in open_courses %}
+Kurssi: <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
+<a href="/signup/{{ open_course[0] }}">Ilmoittaudu kurssille</a> <br>
+{% endfor %}
+
+<hr>
 
 {% endif %}
 
 {% if session.usertype == 1 %}
 
+<hr>
+
 <p>Omat kurssit:</p>
 
-<ul>
-    {% for owned_course in owned_courses %}
-    <li>{{ owned_course[0] }}</li>
-    {% endfor %}
-</ul>
+{% for owned_course in owned_courses %}
+Kurssi: <a href="/course/{{ owned_course[0] }}">{{ owned_course[1] }}</a> <br>
+{% endfor %}
+
+<hr>
 
 <form action="/newcourse" method="post">
     <p>Luo uusi kurssi</p>

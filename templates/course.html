@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block title %}{{ course[1] }}{% endblock %}
+{% block content %}
+
+
+
+{% if session.user_id %}
+
+{% if session.usertype == 0 %}
+
+<p>Kurssi: {{course[1]}}</p>
+
+<p>Läpipääsyraja: {{course[3]}}</p>
+
+{% endif %}
+
+{% if session.usertype == 1 %}
+
+<p>Opettajan sivu!</p>
+
+<p>Kurssi: {{course[1]}}</p>
+
+<p>Läpipääsyraja: {{course[3]}}</p>
+
+{% endif %}
+
+
+
+{% else %}
+
+Ei oikeuksia nähdä sivua!
+
+{% endif %}
+
+
+
+{% endblock %}
