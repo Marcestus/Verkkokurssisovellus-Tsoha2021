@@ -45,10 +45,9 @@ def get_course(id):
 
 def create_new(coursename):
     owner_id = users.user_id()
-    passgrade = 70
     try:
-        sql = "INSERT INTO courses (coursename,owner_id,pass_grade) VALUES (:coursename,:owner_id,:passgrade)"
-        db.session.execute(sql, {"coursename":coursename,"owner_id":owner_id,"passgrade":passgrade})
+        sql = "INSERT INTO courses (coursename,owner_id) VALUES (:coursename,:owner_id)"
+        db.session.execute(sql, {"coursename":coursename,"owner_id":owner_id})
         db.session.commit()
     except:
         return False

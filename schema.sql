@@ -1,3 +1,3 @@
 CREATE TABLE users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT, usertype INTEGER);
-CREATE TABLE courses (id SERIAL PRIMARY KEY, coursename TEXT UNIQUE, owner_id INTEGER, pass_grade INTEGER);
-CREATE TABLE participants (student_id INTEGER, course_id INTEGER);
+CREATE TABLE courses (id SERIAL PRIMARY KEY, coursename TEXT UNIQUE, owner_id INTEGER, pass_grade INTEGER DEFAULT 70, CONSTRAINT fk_owner FOREIGN KEY(owner_id) REFERENCES users(id));
+CREATE TABLE participants (student_id INTEGER, course_id INTEGER, CONSTRAINT fk_student FOREIGN KEY(student_id) REFERENCES users(id), CONSTRAINT fk_course FOREIGN KEY(course_id) REFERENCES courses(id));
