@@ -8,8 +8,6 @@
 
 {% if session.usertype == 0 %}
 
-<hr>
-
 <p>Kurssit, joille olet ilmoittautunut:</p>
 
 {% for users_course in users_courses %}
@@ -30,8 +28,6 @@ Kurssi: <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
 {% endif %}
 
 {% if session.usertype == 1 %}
-
-<hr>
 
 <p>Omat kurssit:</p>
 
@@ -62,6 +58,8 @@ Kurssi: <a href="/course/{{ owned_course[0] }}">{{ owned_course[1] }}</a> <br>
     <p>
     <input type="submit" value="Kirjaudu">
 </form>
+
+<hr>
 
 Jos sinulla ei ole tunnuksia, voit luoda ne <a href="/register">tästä</a>
 

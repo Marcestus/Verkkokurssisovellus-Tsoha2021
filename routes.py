@@ -42,6 +42,9 @@ def course(id):
 
 @app.route("/signup/<int:id>")
 def signup(id):
+
+    # Tännekään ei taida tarvita päästä kuin kirjautuneet
+
     if courses.signup_to_course(id):
         return redirect("/")
     else:
