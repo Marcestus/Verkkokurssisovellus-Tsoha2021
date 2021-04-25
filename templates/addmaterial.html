@@ -12,6 +12,7 @@
                 &lt;p&gt;This is some sample content.&lt;/p&gt;
             </textarea>
             <p><input type="submit" value="Submit"></p>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
         <script>
             ClassicEditor

@@ -37,6 +37,7 @@
             Huom, nimen täytyy olla 3-100 merkkiä pitkä!
             <p>
             <input type="submit" value="Luo kurssi">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
 
     {% endif %}
@@ -50,6 +51,7 @@
     Salasana: <input type="password" name="password">
     <p>
     <input type="submit" value="Kirjaudu">
+    <!--Eikai tämä tarvitse CSRF-tokenia?-->
 </form>
 
 <hr>

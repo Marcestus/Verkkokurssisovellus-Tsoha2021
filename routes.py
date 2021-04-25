@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, session
 import users, courses, coursematerials
 
 
@@ -28,6 +28,8 @@ def course(id):
         return render_template("course.html",course=course, coursematerial=coursematerial)
     if request.method == "POST":
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if coursematerials.save_material(id, request.form["content"]):
             coursematerial = coursematerials.get_materials(id)
             return render_template("course.html",course=course,coursematerial=coursematerial)
@@ -45,6 +47,8 @@ def statistics(id):
 @app.route("/newcourse", methods=["post"])
 def newcourse():
     # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     coursename = request.form["coursename"]
     if len(coursename) < 3 or len(coursename) > 100:
         return render_template("error.html",message="Kurssin nimen pituuden täytyy olla 3-100 merkkiä")
@@ -76,6 +80,7 @@ def signup(id):
 @app.route("/login", methods=["post"])
 def login():
     # Suojaus: tässä taitaa olla kaikki ihan kunnossa
+    # Näissä ei ole CSRF-tsekkausta, ok?
     username = request.form["username"]
     password = request.form["password"]
     if len(username) == 0 or len(password) == 0:
@@ -94,6 +99,7 @@ def logout():
 @app.route("/register", methods=["get","post"])
 def register():
     # Suojaus: ei tarvetta, kuka vaan voi päästä tänne
+    # Näissä ei ole CSRF-tsekkausta, ok?
     if request.method == "GET":
         return render_template("register.html")
     if request.method == "POST":
@@ -105,4 +111,4 @@ def register():
         if users.register(username,password,usertype):
             return redirect("/")
         else:
-            return render_template("error.html",message="Rekisteröinti ei onnistunut")
+            return render_template("error.html",message="Rekisteröinti ei onnistunut, tunnus saattaa olla jo käytössä...")

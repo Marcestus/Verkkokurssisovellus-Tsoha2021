@@ -1,3 +1,4 @@
+import os
 from db import db
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -13,6 +14,7 @@ def login(username,password):
             session["user_id"] = user[1]
             session["username"] = username
             session["usertype"] = user[2]
+            session["csrf_token"] = os.urandom(16).hex()
             return True
         else:
             return False
