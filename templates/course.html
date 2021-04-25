@@ -12,17 +12,32 @@
 
 <p>Läpipääsyraja: {{course[3]}}</p>
 
+<hr>
+
+{% for material in coursematerial %}
+{{ material[0] }}
+{% endfor %}
+
 {% endif %}
 
 {% if session.usertype == 1 %}
 
 <p>Opettajan sivu!</p>
 
+<a href="/addmaterial/{{ course[0] }}">Muokkaa kurssimateriaalia</a>
+
 <hr>
 
 <p>Kurssi: {{course[1]}}</p>
 
 <p>Läpipääsyraja: {{course[3]}}</p>
+
+<hr>
+
+{% for material in coursematerial %}
+{{ material[0] }}
+{% endfor %}
+
 
 {% endif %}
 

@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect
-import users, courses
+import users, courses, coursematerials
 
 @app.route("/")
 def index():
@@ -28,7 +28,12 @@ def newcourse():
     else:
         return render_template("error.html",message="Kurssin lisääminen ei onnistunut")
 
-@app.route("/course/<int:id>")
+@app.route("/addmaterial/<int:id>")
+def addmaterial(id):
+    course = courses.get_course(id)
+    return render_template("addmaterial.html",course=course)
+
+@app.route("/course/<int:id>", methods=["get","post"])
 def course(id):
 
     # Tänne pitää nyt ainakin laittaa se,
@@ -38,7 +43,16 @@ def course(id):
     # Ja tähän myös, että jos ei oo kirjautunut, niin ei näe sivua
 
     course = courses.get_course(id)
-    return render_template("course.html",course=course)
+    if request.method == "GET":
+        coursematerial = coursematerials.get_materials(id)
+        return render_template("course.html",course=course, coursematerial=coursematerial)
+    if request.method == "POST":
+        if coursematerials.save_material(id, request.form["content"]):
+            coursematerial = coursematerials.get_materials(id)
+            return render_template("course.html",course=course,coursematerial=coursematerial)
+        else:
+            return render_template("error.html",message="Kurssimateriaalin tallentaminen ei onnistunut!")
+        
 
 @app.route("/signup/<int:id>")
 def signup(id):

@@ -37,7 +37,6 @@ def open_courses():
     
     return open_courses
 
-
 def get_course(id):
     sql = "SELECT * FROM courses WHERE id=:id"
     result = db.session.execute(sql, {"id":id})
