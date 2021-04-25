@@ -2,8 +2,14 @@
 {% block title %}Tilastot{% endblock %}
 {% block content %}
 
+{% if session.user_id %}
 
-<p>Käyttäjän tilastosivu</p>
+    <p>Käyttäjän {{ session.username }} tilastosivu</p>
 
+{% else %}
 
+    Et ole kirjautunut! <br>
+    Joo tää pitää muuttaa järkevämmäksi
+
+{% endif %}
 {% endblock %}

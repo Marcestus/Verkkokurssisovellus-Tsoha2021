@@ -1,23 +1,30 @@
 {% extends "layout.html" %}
-{% block title %}Kurssimateriaalin muokkaus{% endblock %}
+{% block title %}Kurssimateriaalin lisääminen{% endblock %}
 {% block content %}
-<script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
 
+{% if session.user_id and session.usertype == 1 %}
 
-<h1>Classic editor</h1>
-    <form action="/course/{{ course[0] }}" method="post">
-        <textarea name="content" id="editor">
-            &lt;p&gt;This is some sample content.&lt;/p&gt;
-        </textarea>
-        <p><input type="submit" value="Submit"></p>
-    </form>
-    <script>
-        ClassicEditor
-            .create( document.querySelector( '#editor' ) )
-            .catch( error => {
-                console.error( error );
-            } );
-    </script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
 
+    <h1>Classic editor</h1>
+        <form action="/course/{{ course[0] }}" method="post">
+            <textarea name="content" id="editor">
+                &lt;p&gt;This is some sample content.&lt;/p&gt;
+            </textarea>
+            <p><input type="submit" value="Submit"></p>
+        </form>
+        <script>
+            ClassicEditor
+                .create( document.querySelector( '#editor' ) )
+                .catch( error => {
+                    console.error( error );
+                } );
+        </script>
 
+{% else %}
+
+    Et ole kirjautunut tai opettaja! <br>
+    Joo tää pitää muuttaa järkevämmäksi
+
+{% endif %}
 {% endblock %}

@@ -2,12 +2,13 @@
 {% block title %}Rekisteröinti{% endblock %}
 {% block content %}
 
-
 <form action="/register" method="post">
     <p>Luo uusi tunnus</p>
-    Tunnus: <input type="text" name="username">
+    Tunnus: <input type="text" name="username"> <br>
+    Huom, tunnuksen täytyy olla 3-20 merkkiä pitkä!
     <p>
-    Salasana: <input type="password" name="password">
+    Salasana: <input type="password" name="password"> <br>
+    Huom, salasanan täytyy olla 8-20 merkkiä pitkä!
     <p>
     Valitse käyttäjätyyppi:
     <p>
@@ -16,7 +17,5 @@
     <p>
     <input type="submit" value="Luo tunnus">
 </form>
-
-
 
 {% endblock %}

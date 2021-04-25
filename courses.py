@@ -20,21 +20,13 @@ def all_courses():
     return result.fetchall()
 
 def open_courses():
-    # Voiko tämän suorittaa yhdellä kyselyllä?
-
-    # Haetaan erikseen kaikki kurssit ja kurssit,
-    # joille opiskelija on ilmoittautunut
+    # Voikohan tämän suorittaa yhdellä SQL-kyselyllä?
     other_courses = all_courses()
     signedup_courses = users_courses()
-
-    # Käydään läpi kaikki kurssit ja
-    # valitaan avoimiin kursseihin vain ne,
-    # joihin opiskelija ei ole ilmoittautunut
     open_courses = []
     for course in other_courses:
         if not course in signedup_courses:
             open_courses.append(course)
-    
     return open_courses
 
 def get_course(id):

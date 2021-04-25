@@ -11,9 +11,9 @@
         <a href="/">Etusivu</a>
         
         {% if session.user_id %}
-        <a href="/statistics">Tilastot</a>
-        <a href="/logout">Kirjaudu ulos</a>
-        <p>Olet kirjautunut sisään käyttäjänä {{ session.username }}</p>
+            <a href="/statistics/{{ session.user_id }}">Omat tilastot</a>
+            <a href="/logout">Kirjaudu ulos</a>
+            <p>Olet kirjautunut sisään käyttäjänä {{ session.username }}</p>
         {% endif %}
         
     </div>

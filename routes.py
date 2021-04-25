@@ -2,11 +2,12 @@ from app import app
 from flask import render_template, request, redirect
 import users, courses, coursematerials
 
+
+# Sivuja
+
 @app.route("/")
 def index():
-
-    # Tarviiko tässä huomioida kirjautumista muuten kuin index näyttää session-tietojen mukaan eri näkymän?
-
+    # Suojaus: tehty html-puolella, pitänee siirtää toiminnallisuudet tänne?
     if users.get_usertype() == 0:
         users_courses = courses.users_courses()
         open_courses = courses.open_courses()
@@ -14,89 +15,94 @@ def index():
     elif users.get_usertype() == 1:
         owned_courses = courses.owned_courses()
         return render_template("index.html",owned_courses=owned_courses)
-    
-    return render_template("index.html")
-
-@app.route("/newcourse", methods=["post"])
-def newcourse():
-
-    # Tääkin pitää varmaan suojata niin, että vain (kirjautuneet) opet pääsee tähän sivulle
-
-    coursename = request.form["coursename"]
-    if courses.create_new(coursename):
-        return redirect("/")
     else:
-        return render_template("error.html",message="Kurssin lisääminen ei onnistunut")
-
-@app.route("/addmaterial/<int:id>")
-def addmaterial(id):
-    course = courses.get_course(id)
-    return render_template("addmaterial.html",course=course)
+        return render_template("index.html")
 
 @app.route("/course/<int:id>", methods=["get","post"])
 def course(id):
-
-    # Tänne pitää nyt ainakin laittaa se,
-    # että jos on opettajaroolissa niin ei pääse kuin omalle sivulleen
-    # Eli jos usertype on ope, owner_id pitää olla user_id ennen kun näkee sivun
-
-    # Ja tähän myös, että jos ei oo kirjautunut, niin ei näe sivua
-
+    # Suojaus: vain kirjautuneet saa päästä sivuille
+    # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen sivulle
     course = courses.get_course(id)
     if request.method == "GET":
         coursematerial = coursematerials.get_materials(id)
         return render_template("course.html",course=course, coursematerial=coursematerial)
     if request.method == "POST":
+        # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if coursematerials.save_material(id, request.form["content"]):
             coursematerial = coursematerials.get_materials(id)
             return render_template("course.html",course=course,coursematerial=coursematerial)
         else:
             return render_template("error.html",message="Kurssimateriaalin tallentaminen ei onnistunut!")
-        
+
+@app.route("/statistics/<int:id>")
+def statistics(id):
+    # Suojaus: vain käyttäjä itse saa päästä omalle sivulleen
+    return render_template("statistics.html",id=id)
+
+
+#Opettajan toimintoja
+
+@app.route("/newcourse", methods=["post"])
+def newcourse():
+    # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    coursename = request.form["coursename"]
+    if len(coursename) < 3 or len(coursename) > 100:
+        return render_template("error.html",message="Kurssin nimen pituuden täytyy olla 3-100 merkkiä")
+    if courses.create_new(coursename):
+        return redirect("/")
+    else:
+        return render_template("error.html",message="Kurssin lisääminen ei onnistunut, kurssin nimi saattaa jo olla käytössä...")
+
+@app.route("/addmaterial/<int:id>")
+def addmaterial(id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    course = courses.get_course(id)
+    return render_template("addmaterial.html",course=course)
+
+
+# Opiskelijan toimintoja
 
 @app.route("/signup/<int:id>")
 def signup(id):
-
-    # Tännekään ei taida tarvita päästä kuin kirjautuneet
-
+    # Suojaus: vain (kirjautunut) opiskelija voi ilmoittautua kursseille
     if courses.signup_to_course(id):
         return redirect("/")
     else:
         return render_template("error.html",message="Kurssille ilmoittautuminen ei onnistunut")
 
-@app.route("/statistics")
-def statistics():
 
-    # Täällä pitää varmistaa, että jokainen näkee vain omat tietonsa
-    # Eikä pääse kirjautumatta sivulle
-
-    return render_template("statistics.html")
-
-
+# Kirjautumiseen liittyvät
 
 @app.route("/login", methods=["post"])
 def login():
+    # Suojaus: tässä taitaa olla kaikki ihan kunnossa
     username = request.form["username"]
     password = request.form["password"]
+    if len(username) == 0 or len(password) == 0:
+        return render_template("error.html",message="Tunnus tai salasana ei kelpaa, muistithan syöttää molemmat...")
     if users.login(username,password):
         return redirect("/")
     else:
         return render_template("error.html",message="Väärä tunnus tai salasana")
 
+@app.route("/logout")
+def logout():
+    # Suojaus: tässä taitaa olla kaikki ihan kunnossa
+    users.logout()
+    return redirect("/")
+
 @app.route("/register", methods=["get","post"])
 def register():
+    # Suojaus: ei tarvetta, kuka vaan voi päästä tänne
     if request.method == "GET":
         return render_template("register.html")
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         usertype = request.form["usertype"]
+        if len(username) < 3 or len(username) > 20 or len(password) < 8 or len(password) > 20:
+            return render_template("error.html",message="Käyttäjätunnus tai salasana ei kelpaa! Tarkista pituusvaatimukset")
         if users.register(username,password,usertype):
             return redirect("/")
         else:
             return render_template("error.html",message="Rekisteröinti ei onnistunut")
-
-@app.route("/logout")
-def logout():
-    users.logout()
-    return redirect("/")

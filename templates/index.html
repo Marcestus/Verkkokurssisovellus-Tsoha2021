@@ -2,51 +2,44 @@
 {% block title %}Kirjautuminen{% endblock %}
 {% block content %}
 
-
-
 {% if session.user_id %}
+    {% if session.usertype == 0 %}
 
-{% if session.usertype == 0 %}
+        <p>Kurssit, joille olet ilmoittautunut:</p>
+        {% for users_course in users_courses %}
+            <a href="/course/{{ users_course[0] }}">{{ users_course[1] }}</a> <br>
+        {% endfor %}
 
-<p>Kurssit, joille olet ilmoittautunut:</p>
+        <hr>
 
-{% for users_course in users_courses %}
-Kurssi: <a href="/course/{{ users_course[0] }}">{{ users_course[1] }}</a> <br>
-{% endfor %}
+        <p>Muut avoimet kurssit:</p>
+        {% for open_course in open_courses %}
+            <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
+            <a href="/signup/{{ open_course[0] }}">Ilmoittaudu kurssille</a> <br>
+        {% endfor %}
 
-<hr>
+        <hr>
 
-<p>Muut avoimet kurssit:</p>
+    {% endif %}
 
-{% for open_course in open_courses %}
-Kurssi: <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
-<a href="/signup/{{ open_course[0] }}">Ilmoittaudu kurssille</a> <br>
-{% endfor %}
+    {% if session.usertype == 1 %}
 
-<hr>
+        <p>Omat kurssit:</p>
+        {% for owned_course in owned_courses %}
+            <a href="/course/{{ owned_course[0] }}">{{ owned_course[1] }}</a> <br>
+        {% endfor %}
 
-{% endif %}
+        <hr>
 
-{% if session.usertype == 1 %}
+        <form action="/newcourse" method="post">
+            <p>Luo uusi kurssi</p>
+            Kurssin nimi: <input type="text" name="coursename"> <br>
+            Huom, nimen täytyy olla 3-100 merkkiä pitkä!
+            <p>
+            <input type="submit" value="Luo kurssi">
+        </form>
 
-<p>Omat kurssit:</p>
-
-{% for owned_course in owned_courses %}
-Kurssi: <a href="/course/{{ owned_course[0] }}">{{ owned_course[1] }}</a> <br>
-{% endfor %}
-
-<hr>
-
-<form action="/newcourse" method="post">
-    <p>Luo uusi kurssi</p>
-    Kurssin nimi: <input type="text" name="coursename">
-    <p>
-    <input type="submit" value="Luo kurssi">
-</form>
-
-{% endif %}
-
-
+    {% endif %}
 
 {% else %}
 
@@ -64,7 +57,4 @@ Kurssi: <a href="/course/{{ owned_course[0] }}">{{ owned_course[1] }}</a> <br>
 Jos sinulla ei ole tunnuksia, voit luoda ne <a href="/register">tästä</a>
 
 {% endif %}
-
-
-
 {% endblock %}

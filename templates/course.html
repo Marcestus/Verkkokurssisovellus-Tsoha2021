@@ -2,54 +2,40 @@
 {% block title %}{{ course[1] }}{% endblock %}
 {% block content %}
 
-
-
 {% if session.user_id %}
+    {% if session.usertype == 0 %}
 
-{% if session.usertype == 0 %}
+        <p>Kurssi: {{course[1]}}</p>
+        <p>Läpipääsyraja: {{course[3]}}</p>
 
-<p>Kurssi: {{course[1]}}</p>
+        <hr>
 
-<p>Läpipääsyraja: {{course[3]}}</p>
+        {% for material in coursematerial %}
+            {{ material[0] }}
+        {% endfor %}
 
-<hr>
+    {% endif %}
 
-{% for material in coursematerial %}
-{{ material[0] }}
-{% endfor %}
+    {% if session.usertype == 1 %}
 
-{% endif %}
+        <a href="/addmaterial/{{ course[0] }}">Muokkaa kurssimateriaalia</a>
 
-{% if session.usertype == 1 %}
+        <hr>
 
-<p>Opettajan sivu!</p>
+        <p>Kurssi: {{course[1]}}</p>
+        <p>Läpipääsyraja: {{course[3]}}</p>
 
-<a href="/addmaterial/{{ course[0] }}">Muokkaa kurssimateriaalia</a>
+        <hr>
 
-<hr>
+        {% for material in coursematerial %}
+            {{ material[0] }}
+        {% endfor %}
 
-<p>Kurssi: {{course[1]}}</p>
-
-<p>Läpipääsyraja: {{course[3]}}</p>
-
-<hr>
-
-{% for material in coursematerial %}
-{{ material[0] }}
-{% endfor %}
-
-
-{% endif %}
-
-
-
+    {% endif %}
 {% else %}
 
-Ei oikeuksia nähdä sivua!
-Joo tää pitää muuttaa järkevämmäksi
+    Et ole kirjautunut! <br>
+    Joo tää pitää muuttaa järkevämmäksi
 
 {% endif %}
-
-
-
 {% endblock %}
