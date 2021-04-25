@@ -11,12 +11,11 @@
         <a href="/">Etusivu</a>
         
         {% if session.user_id %}
-
-        <p>Olet kirjautunut sisään käyttäjänä {{ session.username }}</p>
         <a href="/statistics">Tilastot</a>
         <a href="/logout">Kirjaudu ulos</a>
-
+        <p>Olet kirjautunut sisään käyttäjänä {{ session.username }}</p>
         {% endif %}
+        
     </div>
     <div class="content">
         {% block content %}{% endblock %}
