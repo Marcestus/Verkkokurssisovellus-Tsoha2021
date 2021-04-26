@@ -3,6 +3,19 @@ Helsingin Yliopisto / Aineopintojen harjoitustyö: Tietokantasovellus -kurssin h
 
 # Sovelluksen nykyinen tilanne ja testaus Herokussa
 
+Sovellus on testattavissa Herokussa https://verkkokurssisovellus.herokuapp.com/
+
+Sovelluksessa on muutamia valmiita tunnuksia (niitä voi toki luoda myös itse). Tunnukset ovat mielikuvituksellisesti 'opiskelija', 'opiskelija2', 'opettaja', 'opettaja2'. Kaikilla on sama salasana 'SukkaPorkkana57'
+
+Huomioita sovelluksesta:
+-  Tällä hetkellä sekä opettajat että oppilaat voivat rekisteröityä ja kirjautua palveluun. Opettajat voivat luoda uusia kursseja ja lisätä niille tekstisisältöä. Oppilaat voivat tarkastella kursseja ja ilmoittautua niille
+-  Tavoiteaikataulusta poiketen kurssin kaikki ydintoiminto ei siis ole vielä valmis ja kuten näkyy, ulkoasukin on vielä aloittamatta
+-  Herokussa testatessa sovellus toimi erittäin hitaasti (pitää selvitellä jos ongelma jatkuu)
+-  Käyttäjän oikeuksia (kurssimateriaali osa 4) ei ole vielä toteutettu, mutta tarvittavat toimenpiteet on kommentoitu koodiin siltä osin, kun niitä on tullut mieleen
+-  Opettaja saa tällä hetkellä lisättyä kurssisisältöä, mutta muotoiluja en ole vielä saanut toimimaan (html-komennot näkyvät siis vielä materiaalissa ja teksti tulostuu muotoiluitta)
+
+### Tilanne 2. välipalautuksessa (21.3)
+
 Ikävä kyllä sovelluksen toteuttaminen ei ole edennyt tavoiteaikataulun mukaisesti. Olen vielä opettelemassa kurssin materiaalia, eli en ole saanut vielä toimivaa pohjaa työlleni. Näin ollen Herokustakaan ei löydy mitään testattavaa.
 
 # Aiheen kuvaus
