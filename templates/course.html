@@ -3,19 +3,6 @@
 {% block content %}
 
 {% if session.user_id %}
-    {% if session.usertype == 0 %}
-
-        <p>Kurssi: {{course[1]}}</p>
-        <p>Läpipääsyraja: {{course[3]}}</p>
-
-        <hr>
-
-        {% for material in coursematerial %}
-            {{ material[0] }}
-        {% endfor %}
-
-    {% endif %}
-
     {% if session.usertype == 1 %}
 
         <a href="/addmaterial/{{ course[0] }}">Muokkaa kurssimateriaalia</a>
@@ -28,10 +15,33 @@
         <hr>
 
         {% for material in coursematerial %}
-            {{ material[0] }}
+            {{ material[1] }} <br>
         {% endfor %}
 
+        <hr>
+
+        Ja tänne tehtävät
+
     {% endif %}
+    
+    {% if session.usertype == 2 %}
+
+        <p>Kurssi: {{course[1]}}</p>
+        <p>Läpipääsyraja: {{course[3]}}</p>
+
+        <hr>
+
+        {% for material in coursematerial %}
+            {{ material[1] }} <br>
+        {% endfor %}
+
+        <hr>
+
+        Ja tänne tehtävät
+
+    {% endif %}
+
+    
 {% else %}
 
     Et ole kirjautunut! <br>

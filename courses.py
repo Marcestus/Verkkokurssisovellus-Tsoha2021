@@ -1,5 +1,5 @@
 from db import db
-import users
+import users, coursematerials
 
 def owned_courses():
     owner_id = users.user_id()
@@ -34,6 +34,11 @@ def get_course(id):
     result = db.session.execute(sql, {"id":id})
     return result.fetchone()
 
+def get_id(coursename):
+    sql = "SELECT id FROM courses WHERE coursename=:coursename"
+    result = db.session.execute(sql, {"coursename":coursename})
+    return result.fetchone()
+
 def create_new(coursename):
     owner_id = users.user_id()
     try:
@@ -42,7 +47,12 @@ def create_new(coursename):
         db.session.commit()
     except:
         return False
-    return True
+    try:
+        course_id = get_id(coursename)
+        coursematerials.initiate_materials(course_id[0])
+        return True
+    except:
+        return False
 
 def signup_to_course(course_id):
     user_id = users.user_id()

@@ -3,25 +3,7 @@
 {% block content %}
 
 {% if session.user_id %}
-    {% if session.usertype == 0 %}
-
-        <p>Kurssit, joille olet ilmoittautunut:</p>
-        {% for users_course in users_courses %}
-            <a href="/course/{{ users_course[0] }}">{{ users_course[1] }}</a> <br>
-        {% endfor %}
-
-        <hr>
-
-        <p>Muut avoimet kurssit:</p>
-        {% for open_course in open_courses %}
-            <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
-            <a href="/signup/{{ open_course[0] }}">Ilmoittaudu kurssille</a> <br>
-        {% endfor %}
-
-        <hr>
-
-    {% endif %}
-
+    
     {% if session.usertype == 1 %}
 
         <p>Omat kurssit:</p>
@@ -39,6 +21,25 @@
             <input type="submit" value="Luo kurssi">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
+
+    {% endif %}
+
+    {% if session.usertype == 2 %}
+
+        <p>Kurssit, joille olet ilmoittautunut:</p>
+        {% for users_course in users_courses %}
+            <a href="/course/{{ users_course[0] }}">{{ users_course[1] }}</a> <br>
+        {% endfor %}
+
+        <hr>
+
+        <p>Muut avoimet kurssit:</p>
+        {% for open_course in open_courses %}
+            <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
+            <a href="/signup/{{ open_course[0] }}">Ilmoittaudu kurssille</a> <br>
+        {% endfor %}
+
+        <hr>
 
     {% endif %}
 

@@ -8,13 +8,13 @@ import users, courses, coursematerials
 @app.route("/")
 def index():
     # Suojaus: tehty html-puolella, pitänee siirtää toiminnallisuudet tänne?
-    if users.get_usertype() == 0:
+    if users.get_usertype() == 1:
+        owned_courses = courses.owned_courses()
+        return render_template("index.html",owned_courses=owned_courses)
+    elif users.get_usertype() == 2:
         users_courses = courses.users_courses()
         open_courses = courses.open_courses()
         return render_template("index.html",users_courses=users_courses,open_courses=open_courses)
-    elif users.get_usertype() == 1:
-        owned_courses = courses.owned_courses()
-        return render_template("index.html",owned_courses=owned_courses)
     else:
         return render_template("index.html")
 
@@ -30,7 +30,7 @@ def course(id):
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if coursematerials.save_material(id, request.form["content"]):
+        if coursematerials.save_material(id, request.form["content"], request.form["material_id"]):
             coursematerial = coursematerials.get_materials(id)
             return render_template("course.html",course=course,coursematerial=coursematerial)
         else:
@@ -61,7 +61,8 @@ def newcourse():
 def addmaterial(id):
     # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
     course = courses.get_course(id)
-    return render_template("addmaterial.html",course=course)
+    materials = coursematerials.get_materials(id)
+    return render_template("addmaterial.html",course=course,materials=materials)
 
 
 # Opiskelijan toimintoja
