@@ -54,6 +54,15 @@ def create_new(coursename):
     except:
         return False
 
+def update_passgrade(course_id, pass_grade):
+    try:
+        sql = "UPDATE courses SET pass_grade=:pass_grade WHERE id=:course_id"
+        db.session.execute(sql, {"course_id":course_id,"pass_grade":pass_grade})
+        db.session.commit()
+    except:
+        return False
+    return True
+
 def signup_to_course(course_id):
     user_id = users.user_id()
     try:

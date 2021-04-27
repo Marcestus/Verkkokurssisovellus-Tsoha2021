@@ -57,6 +57,22 @@ def newcourse():
     else:
         return render_template("error.html",message="Kurssin lisääminen ei onnistunut, kurssin nimi saattaa jo olla käytössä...")
 
+@app.route("/update_passgrade", methods=["post"])
+def update_passgrade():
+    # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    new_passgrade = request.form["passgrade"]
+    #if new_passgrade < 1 or new_passgrade > 100:
+    #    return render_template("error.html",message="Läpipääsyrajan pitää olla välillä 1-100")
+    course_id = request.form["course_id"]
+    if courses.update_passgrade(course_id, new_passgrade):
+        return redirect(f"course/{course_id}")
+    else:
+        return render_template("error.html",message="Läpipääsyrajan päivittäminen ei onnistunut!")
+
+
+
 @app.route("/addmaterial/<int:id>")
 def addmaterial(id):
     # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle

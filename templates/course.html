@@ -12,6 +12,15 @@
         <p>Kurssi: {{course[1]}}</p>
         <p>Läpipääsyraja: {{course[3]}}</p>
 
+        <form action="/update_passgrade" method="post">
+            Muokkaa läpipääsyrajaa: <input type="number" name="passgrade" min="1" max="100"> <br>
+            Huom, läpipääsyrajan tulee olla välillä 1-100!
+            <p>
+            <input type="submit" value="Päivitä raja">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course[0] }}">
+        </form>
+        
         <hr>
 
         {% for material in coursematerial %}
