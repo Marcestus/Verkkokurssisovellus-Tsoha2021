@@ -107,6 +107,9 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         usertype = request.form["usertype"]
+        password_again = request.form["password_again"]
+        if password != password_again:
+            return render_template("error.html",message="Salasanat eivät täsmää, koita uudestaan!")
         if len(username) < 3 or len(username) > 20 or len(password) < 8 or len(password) > 20:
             return render_template("error.html",message="Käyttäjätunnus tai salasana ei kelpaa! Tarkista pituusvaatimukset")
         if users.register(username,password,usertype):
