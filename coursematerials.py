@@ -3,7 +3,6 @@ import courses
 
 def save_material(course_id, material, material_id):
     try:
-        print(material_id)
         sql = "UPDATE coursematerials SET material=:material WHERE id=:material_id"
         db.session.execute(sql, {"material":material,"material_id":material_id})
         db.session.commit()

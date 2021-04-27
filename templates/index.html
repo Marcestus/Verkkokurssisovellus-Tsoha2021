@@ -15,10 +15,10 @@
 
         <form action="/newcourse" method="post">
             <p>Luo uusi kurssi</p>
-            Kurssin nimi: <input type="text" name="coursename"> <br>
+            Kurssin nimi: <input type="text" name="coursename">
+            <input type="submit" value="Luo kurssi"> <br>
             Huom, nimen täytyy olla 3-100 merkkiä pitkä!
             <p>
-            <input type="submit" value="Luo kurssi">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
 
