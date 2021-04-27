@@ -5,10 +5,6 @@
 {% if session.user_id %}
     {% if session.usertype == 1 %}
 
-        <a href="/addmaterial/{{ course[0] }}">Muokkaa kurssimateriaalia</a>
-
-        <hr>
-
         <p>Kurssi: {{course[1]}}</p>
         <p>Läpipääsyraja: {{course[3]}}</p>
 
@@ -22,9 +18,11 @@
         </form>
         
         <hr>
-
+        
         {% for material in coursematerial %}
-            {{ material[1] }} <br>
+            <p style="white-space: pre-line">{{ material[1] }}</p>
+            <a href="/update_material/{{ course[0] }}/{{ material[0] }}">Muokkaa</a>
+            <p>
         {% endfor %}
 
         <hr>
@@ -41,7 +39,8 @@
         <hr>
 
         {% for material in coursematerial %}
-            {{ material[1] }} <br>
+            <p style="white-space: pre-line">{{ material[1] }}</p>
+            <p>
         {% endfor %}
 
         <hr>

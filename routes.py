@@ -30,7 +30,7 @@ def course(id):
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if coursematerials.save_material(id, request.form["content"], request.form["material_id"]):
+        if coursematerials.update_material(id, request.form["content"], request.form["material_id"]):
             coursematerial = coursematerials.get_materials(id)
             return render_template("course.html",course=course,coursematerial=coursematerial)
         else:
@@ -71,14 +71,12 @@ def update_passgrade():
     else:
         return render_template("error.html",message="Läpipääsyrajan päivittäminen ei onnistunut!")
 
-
-
-@app.route("/addmaterial/<int:id>")
-def addmaterial(id):
+@app.route("/update_material/<int:course_id>/<int:material_id>")
+def update_material(course_id,material_id):
     # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
-    course = courses.get_course(id)
-    materials = coursematerials.get_materials(id)
-    return render_template("addmaterial.html",course=course,materials=materials)
+    course = courses.get_course(course_id)
+    material = coursematerials.get_material(material_id)
+    return render_template("updatematerial.html",course=course,material=material)
 
 
 # Opiskelijan toimintoja

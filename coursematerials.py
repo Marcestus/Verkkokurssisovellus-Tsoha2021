@@ -1,7 +1,7 @@
 from db import db
 import courses
 
-def save_material(course_id, material, material_id):
+def update_material(course_id, material, material_id):
     try:
         sql = "UPDATE coursematerials SET material=:material WHERE id=:material_id"
         db.session.execute(sql, {"material":material,"material_id":material_id})
@@ -9,6 +9,11 @@ def save_material(course_id, material, material_id):
     except:
         return False
     return True
+
+def get_material(material_id):
+    sql = "SELECT id, material FROM coursematerials WHERE id=:material_id"
+    result = db.session.execute(sql, {"material_id":material_id})
+    return result.fetchone()
 
 def get_materials(course_id):
     sql = "SELECT id, material FROM coursematerials WHERE course_id=:course_id ORDER BY ordervalue"
