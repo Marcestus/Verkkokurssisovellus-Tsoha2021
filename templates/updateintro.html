@@ -5,6 +5,17 @@
 {% if session.user_id and session.usertype == 1 %}
 
     <h1>{{ course[1] }}</h1>
+
+        <form action="/update_passgrade" method="post">
+            <p>Läpipääsyraja: {{course[3]}}</p>
+            Muuta rajaa: <input type="number" name="passgrade" min="1" max="100">
+            <input type="submit" value="Päivitä raja"> <br>
+            Huom, läpipääsyrajan tulee olla välillä 1-100!
+            <p>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course[0] }}">
+        </form>
+
     <form action="/course/{{ course[0] }}" method="post">
         <textarea name="content" rows="25" cols="100">{{ course[4] }}</textarea>
         <p><input type="submit" value="Päivitä johdanto"></p>
