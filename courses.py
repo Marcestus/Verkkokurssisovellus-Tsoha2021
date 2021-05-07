@@ -43,37 +43,36 @@ def get_course_id(coursename):
 def create_new(coursename):
     owner_id = users.user_id()
     try:
-        create_course = "INSERT INTO Courses (coursename,owner_id) VALUES (:coursename,:owner_id)"
-        db.session.execute(create_course, {"coursename":coursename,"owner_id":owner_id})
+        sql = "INSERT INTO Courses (coursename, owner_id) VALUES (:coursename, :owner_id)"
+        db.session.execute(sql, {"coursename":coursename, "owner_id":owner_id})
         db.session.commit()
     except:
         return False
     return True
 
-def update_passgrade(course_id,passgrade):
+def update_passgrade(course_id, passgrade):
     try:
         sql = "UPDATE Courses SET passgrade=:passgrade WHERE id=:course_id"
-        db.session.execute(sql, {"course_id":course_id,"passgrade":passgrade})
+        db.session.execute(sql, {"course_id":course_id, "passgrade":passgrade})
         db.session.commit()
     except:
         return False
     return True
 
-def update_intro(course_id,intro):
+def update_intro(course_id, intro):
     try:
         sql = "UPDATE Courses SET course_intro=:intro WHERE id=:course_id"
-        db.session.execute(sql, {"course_id":course_id,"intro":intro})
+        db.session.execute(sql, {"course_id":course_id, "intro":intro})
         db.session.commit()
     except:
         return False
     return True
-
 
 def signup_to_course(course_id):
     user_id = users.user_id()
     try:
-        sql = "INSERT INTO Participants (student_id, course_id) VALUES (:user_id,:course_id)"
-        db.session.execute(sql, {"user_id":user_id,"course_id":course_id})
+        sql = "INSERT INTO Participants (student_id, course_id) VALUES (:user_id, :course_id)"
+        db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
         db.session.commit()
     except:
         return False

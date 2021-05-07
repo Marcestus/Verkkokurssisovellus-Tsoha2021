@@ -25,15 +25,15 @@
         <hr>
 
         {% if no_material %}
-            <p><a href="/add_material/{{ course[0] }}/0">Lisää uusi osio</a></p>
+            <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_first">Lisää uusi osio</a></p>
         {% else %}
             {% for material in coursematerial %}
                 <p style="white-space: pre-line">{{ material[1] }}</p>
                 <p style="white-space: pre-line">{{ material[2] }}</p>
                 <a href="/update_material/{{ course[0] }}/{{ material[0] }}">Muokkaa</a>
-                <a href="/delete_material/{{ course[0] }}/{{ material[0] }}">Poista</a>
+                <a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/delete">Poista</a>
                 <hr>
-                <p><a href="/add_material/{{ course[0] }}/{{ material[0] }}">Lisää uusi osio tähän väliin</a></p>
+                <p><a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/add">Lisää uusi osio tähän väliin</a></p>
                 <p>
                 <hr>
             {% endfor %}
