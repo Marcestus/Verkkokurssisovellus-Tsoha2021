@@ -42,7 +42,11 @@ def course(id):
             no_material = True
         else:
             no_material = False
-        return render_template("course.html", course=course, coursematerial=coursematerial, no_material=no_material)
+        if coursematerials.get_amount_of_material_slots(id) == 10:
+            slot_add_ok = False
+        else:
+            slot_add_ok = True
+        return render_template("course.html", course=course, coursematerial=coursematerial, no_material=no_material, slot_add_ok=slot_add_ok)
 
 @app.route("/statistics/<int:id>")
 def statistics(id):
@@ -94,13 +98,12 @@ def update_material(course_id, material_id):
 def modify_coursematerial_order(course_id, material_id, modify_type):
     # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
     slotcount = coursematerials.get_amount_of_material_slots(course_id)
-    print(slotcount)
-    if slotcount > 10:
+    if modify_type != "delete" and slotcount >= 10:
         return render_template("error.html", message="Et voi lisätä uusia osioita, maksimimäärä on 10!")
     if coursematerials.modify_material_order(course_id, material_id, modify_type):
         return redirect(f"/course/{course_id}")
     else:
-        return render_template("error.html", message="Materiaalin lisääminen ei onnistunut")
+        return render_template("error.html", message="Materiaalin lisääminen ei onnistunut!")
 
 
 # Opiskelijan toimintoja

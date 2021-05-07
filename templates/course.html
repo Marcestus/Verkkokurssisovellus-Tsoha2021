@@ -16,27 +16,52 @@
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="hidden" name="course_id" value="{{ course[0] }}">
         </form>
-        
-        <hr>
-        
+
         <p style="white-space: pre-line">{{ course[4] }}</p>
         <a href="/update_intro/{{ course[0] }}">Muokkaa</a>
 
         <hr>
 
+        {% if not slot_add_ok %}
+        
+            <p>Osioiden maksimimäärä saavutettu! Poista osio, jos haluat lisätä uuden</p>
+                
+        {% endif %}
+
+        <hr>
+
         {% if no_material %}
+
             <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_first">Lisää uusi osio</a></p>
+        
         {% else %}
+
             {% for material in coursematerial %}
+                {% if slot_add_ok %}
+
+                    <p><a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/add_middle">Lisää uusi osio</a></p>
+                    
+                    <hr>
+
+                {% endif %}
+
                 <p style="white-space: pre-line">{{ material[1] }}</p>
                 <p style="white-space: pre-line">{{ material[2] }}</p>
                 <a href="/update_material/{{ course[0] }}/{{ material[0] }}">Muokkaa</a>
                 <a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/delete">Poista</a>
-                <hr>
-                <p><a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/add">Lisää uusi osio tähän väliin</a></p>
                 <p>
+
                 <hr>
             {% endfor %}
+            
+            {% if slot_add_ok %}
+
+                <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_last">Lisää uusi osio</a></p>
+
+                <hr>
+
+            {% endif %}
+
         {% endif %}
 
         Ja tänne tehtävät

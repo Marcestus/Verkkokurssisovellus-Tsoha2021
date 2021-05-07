@@ -34,10 +34,16 @@ def update_material(material_id, title, text):
 
 def modify_material_order(course_id, material_id, modify_type):
     if modify_type == "add_first":
-        if add_material(course_id, material_id):
+        ordervalue = 1
+        if add_material(course_id, material_id, ordervalue):
             return True
-    elif modify_type == "add":
-        if update_ordervalues(course_id, material_id, modify_type) and add_material(course_id, material_id):
+    elif modify_type == "add_last":
+        ordervalue = get_amount_of_material_slots(course_id) + 1
+        if add_material(course_id, material_id, ordervalue):
+            return True
+    elif modify_type == "add_middle":
+        ordervalue = get_ordervalue(material_id)
+        if update_ordervalues(course_id, material_id, modify_type) and add_material(course_id, material_id, ordervalue):
             return True
     elif modify_type == "delete":
         if update_ordervalues(course_id, material_id, modify_type) and delete_material(course_id, material_id):
@@ -46,13 +52,9 @@ def modify_material_order(course_id, material_id, modify_type):
         return False
     return False
 
-def add_material(course_id, material_id):
+def add_material(course_id, material_id, ordervalue):
     title = "Väliotsikko"
     text = "Lisää materiaali tähän"
-    if material_id == 0:
-        ordervalue = 1
-    else:
-        ordervalue = get_ordervalue(material_id) + 1
     try:
         sql = "INSERT INTO Coursematerials (course_id, material_order, material_title, material_content) VALUES (:course_id, :ordervalue, :title, :text)"
         db.session.execute(sql, {"course_id":course_id, "ordervalue":ordervalue, "title":title, "text":text})
@@ -71,11 +73,11 @@ def delete_material(course_id, material_id):
     return True
     
 def update_ordervalues(course_id, material_id, modify_type):
-    if modify_type == "add":
+    if modify_type == "add_middle":
         change = 1
         interval = -1
         first = get_amount_of_material_slots(course_id)
-        last = get_ordervalue(material_id)
+        last = get_ordervalue(material_id) - 1
     if modify_type == "delete":
         change = -1
         interval = 1
