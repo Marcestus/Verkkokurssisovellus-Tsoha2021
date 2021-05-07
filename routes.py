@@ -22,19 +22,27 @@ def index():
 def course(id):
     # Suojaus: vain kirjautuneet saa päästä sivuille
     # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen sivulle
-    course = courses.get_course(id)
-    if request.method == "GET":
-        coursematerial = coursematerials.get_materials(id)
-        return render_template("course.html",course=course, coursematerial=coursematerial)
+    fail = False
     if request.method == "POST":
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if coursematerials.update_material(id, request.form["content"], request.form["material_id"]):
-            coursematerial = coursematerials.get_materials(id)
-            return render_template("course.html",course=course,coursematerial=coursematerial)
+        if request.form["update_type"] == "intro_update":
+            if not courses.update_intro(id, request.form["content"]):
+                fail = True
+        if request.form["update_type"] == "material_update":
+            if not coursematerials.update_material(request.form["material_id"], request.form["title"], request.form["content"]):
+                fail = True
+    if fail:
+        return render_template("error.html",message="Kurssimateriaalin päivittäminen ei onnistunut!")
+    else:
+        course = courses.get_course(id)
+        coursematerial = coursematerials.get_materials(id)
+        if len(coursematerial) == 0:
+            no_material = True
         else:
-            return render_template("error.html",message="Kurssimateriaalin tallentaminen ei onnistunut!")
+            no_material = False
+        return render_template("course.html",course=course,coursematerial=coursematerial,no_material=no_material)
 
 @app.route("/statistics/<int:id>")
 def statistics(id):
@@ -78,6 +86,30 @@ def update_material(course_id,material_id):
     material = coursematerials.get_material(material_id)
     return render_template("updatematerial.html",course=course,material=material)
 
+@app.route("/add_material/<int:course_id>/<int:material_id>")
+def add_material(course_id,material_id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    slotcount = coursematerials.get_amount_of_material_slots(course_id)
+    if slotcount >= 10:
+        return render_template("error.html",message="Et voi lisätä uusia osioita, maksimimäärä on 10!")
+    if coursematerials.add_material(course_id, material_id):
+        return redirect(f"/course/{course_id}")
+    else:
+        return render_template("error.html",message="Materiaalin lisääminen ei onnistunut")
+
+@app.route("/delete_material/<int:course_id>/<int:material_id>")
+def delete_material(course_id,material_id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    if coursematerials.delete_material(course_id,material_id):
+        return redirect(f"/course/{course_id}")
+    else:
+        return render_template("error.html",message="Materiaalin poistaminen ei onnistunut!")
+
+@app.route("/update_intro/<int:course_id>")
+def update_intro(course_id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    course = courses.get_course(course_id)
+    return render_template("updateintro.html",course=course)
 
 # Opiskelijan toimintoja
 

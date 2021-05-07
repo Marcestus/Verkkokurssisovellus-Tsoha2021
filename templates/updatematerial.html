@@ -1,15 +1,17 @@
 {% extends "layout.html" %}
-{% block title %}Kurssimateriaalin lisääminen{% endblock %}
+{% block title %}Kurssimateriaalin päivitys{% endblock %}
 {% block content %}
 
 {% if session.user_id and session.usertype == 1 %}
 
     <h1>{{ course[1] }}</h1>
     <form action="/course/{{ course[0] }}" method="post">
-        <textarea name="content" rows="25" cols="100">{{ material[1] }}</textarea>
+        <textarea name="title" rows="1" cols="100">{{ material[1] }}</textarea> <br>
+        <textarea name="content" rows="25" cols="100">{{ material[2] }}</textarea>
         <p><input type="submit" value="Päivitä materiaali"></p>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <input type="hidden" name="material_id" value="{{ material[0] }}">
+        <input type="hidden" name="update_type" value="material_update">
     </form>
 
 {% else %}

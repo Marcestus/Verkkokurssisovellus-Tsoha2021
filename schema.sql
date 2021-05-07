@@ -1,47 +1,49 @@
-CREATE TABLE usertypes (
+CREATE TABLE Usertypes (
     id SERIAL PRIMARY KEY,
     usertype_id INTEGER,
     usertype_name TEXT
 );
-CREATE TABLE users (
+CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT,
     usertype INTEGER REFERENCES usertypes
 );
-CREATE TABLE courses (
+CREATE TABLE Courses (
     id SERIAL PRIMARY KEY,
     coursename TEXT UNIQUE,
     owner_id INTEGER REFERENCES users,
-    pass_grade INTEGER DEFAULT 70
+    passgrade INTEGER DEFAULT 70,
+    course_intro TEXT DEFAULT 'Kurssin johdanto'
 );
-CREATE TABLE participants (
+CREATE TABLE Participants (
     student_id INTEGER REFERENCES users,
     course_id INTEGER REFERENCES courses
 );
-CREATE TABLE ordervalues (
+CREATE TABLE Ordervalues (
     id SERIAL PRIMARY KEY,
     ordervalue INTEGER
 );
-CREATE TABLE coursematerials (
+CREATE TABLE Coursematerials (
     id SERIAL PRIMARY KEY,
     course_id INTEGER REFERENCES courses,
-    ordervalue INTEGER REFERENCES ordervalues,
-    material TEXT
+    material_order INTEGER REFERENCES ordervalues,
+    material_title TEXT,
+    material_content TEXT
 );
 
-INSERT INTO usertypes (usertype_id,usertype_name) VALUES (1, 'opettaja');
-INSERT INTO usertypes (usertype_id,usertype_name) VALUES (2, 'opiskelija');
-INSERT INTO ordervalues (ordervalue) VALUES (1);
-INSERT INTO ordervalues (ordervalue) VALUES (2);
-INSERT INTO ordervalues (ordervalue) VALUES (3);
-INSERT INTO ordervalues (ordervalue) VALUES (4);
-INSERT INTO ordervalues (ordervalue) VALUES (5);
-INSERT INTO ordervalues (ordervalue) VALUES (6);
-INSERT INTO ordervalues (ordervalue) VALUES (7);
-INSERT INTO ordervalues (ordervalue) VALUES (8);
-INSERT INTO ordervalues (ordervalue) VALUES (9);
-INSERT INTO ordervalues (ordervalue) VALUES (10);
-INSERT INTO ordervalues (ordervalue) VALUES (11);
-INSERT INTO ordervalues (ordervalue) VALUES (12);
-INSERT INTO ordervalues (ordervalue) VALUES (13);
+INSERT INTO Usertypes (usertype_id,usertype_name) VALUES (1, 'teacher');
+INSERT INTO Usertypes (usertype_id,usertype_name) VALUES (2, 'student');
+INSERT INTO Ordervalues (ordervalue) VALUES (1);
+INSERT INTO Ordervalues (ordervalue) VALUES (2);
+INSERT INTO Ordervalues (ordervalue) VALUES (3);
+INSERT INTO Ordervalues (ordervalue) VALUES (4);
+INSERT INTO Ordervalues (ordervalue) VALUES (5);
+INSERT INTO Ordervalues (ordervalue) VALUES (6);
+INSERT INTO Ordervalues (ordervalue) VALUES (7);
+INSERT INTO Ordervalues (ordervalue) VALUES (8);
+INSERT INTO Ordervalues (ordervalue) VALUES (9);
+INSERT INTO Ordervalues (ordervalue) VALUES (10);
+
+SELECT * FROM Usertypes;
+SELECT * FROM Ordervalues;

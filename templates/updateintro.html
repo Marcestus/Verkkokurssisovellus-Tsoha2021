@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Kurssin johdannon päivitys{% endblock %}
+{% block content %}
+
+{% if session.user_id and session.usertype == 1 %}
+
+    <h1>{{ course[1] }}</h1>
+    <form action="/course/{{ course[0] }}" method="post">
+        <textarea name="content" rows="25" cols="100">{{ course[4] }}</textarea>
+        <p><input type="submit" value="Päivitä johdanto"></p>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="update_type" value="intro_update">
+    </form>
+
+{% else %}
+
+    Et ole kirjautunut tai opettaja! <br>
+    Joo tää pitää muuttaa järkevämmäksi
+
+{% endif %}
+{% endblock %}
+
+
