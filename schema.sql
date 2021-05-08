@@ -18,7 +18,8 @@ CREATE TABLE Courses (
 );
 CREATE TABLE Participants (
     student_id INTEGER REFERENCES users,
-    course_id INTEGER REFERENCES Courses
+    course_id INTEGER REFERENCES Courses,
+    course_passed BOOLEAN DEFAULT FALSE
 );
 CREATE TABLE Coursematerials (
     id SERIAL PRIMARY KEY,
@@ -47,6 +48,16 @@ CREATE TABLE Choices (
     exercise_id INTEGER REFERENCES Exercises,
     choice TEXT,
     correctness BOOLEAN
+);
+CREATE TABLE Answers (
+    student_id INTEGER REFERENCES Users,
+    exercise_id INTEGER REFERENCES Exercises,
+    answer_right BOOLEAN
+);
+CREATE TABLE Done_exercises (
+    student_id INTEGER REFERENCES Users,
+    course_id INTEGER REFERENCES Courses,
+    exercise_type INTEGER REFERENCES Exercisetypes
 );
 
 INSERT INTO Usertypes (usertype_id, usertype_name) VALUES (1, 'teacher');

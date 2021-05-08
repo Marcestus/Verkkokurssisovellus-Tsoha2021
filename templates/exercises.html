@@ -24,28 +24,26 @@
 
         {% else %}
 
-            
-
             {% for quiz in quizzes_and_choises %}
 
-                <form action="/anser_to_exercise" method="post">
-                    Pisteet: {{ quiz[0][1] }}
-                    Kysymys: {{ quiz[0][2] }}
-                    
-                    <p>
-                    
-                    {% for choice in quiz[1] %}
-                            <input type="radio" name="choice" value="{{ choice[0] }}">{{ choice[1] }}<br>
-                    {% endfor %}
-                    
-                    <p>
-                    
-                    Opettaja-roolissa ei voi vastata tehtäviin
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                </form>
+                Pisteet: {{ quiz[0][1] }}
+                Kysymys: {{ quiz[0][2] }}
+                
+                <p>
+                
+                {% for choice in quiz[1] %}
+                    <input type="radio" name="choice" value="{{ choice }}">{{ choice[2] }}<br>
+                {% endfor %}
+                
+                <p>
+                
                 <hr>
 
             {% endfor %}
+
+            <p>Opettaja-roolissa ei voi vastata tehtäviin</p>
+
+            <hr>
         
         {% endif %}
 
@@ -63,17 +61,18 @@
         {% else %}
 
             {% for text in text_exercises %}
-                <form action="/anser_to_exercise" method="post">
-                    Pisteet: {{ text[1] }}
-                    Kysymys: {{ text[2] }}
-                    
-                    <p>Vastaus: <input type="text" name="answer"><br></p>
-                    
-                    Opettaja-roolissa ei voi vastata tehtäviin
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                </form>
+                Pisteet: {{ text[1] }}
+                Kysymys: {{ text[2] }}
+                
+                <p>Vastaus: <input type="text" name="answer"><br></p>
+                
                 <hr>
+
             {% endfor %}
+
+            <p>Opettaja-roolissa ei voi vastata tehtäviin</p>
+
+            <hr>
 
         {% endif %}
 
@@ -137,26 +136,32 @@
 
         {% else %}
 
-            {% for quiz in quizzes_and_choises %}
-                <form action="/anser_to_exercise" method="post">
+            <form action="/answer_to_exercises" method="post">
+                {% for quiz in quizzes_and_choises %}
                     Pisteet: {{ quiz[0][1] }}
                     Kysymys: {{ quiz[0][2] }}
                     
                     <p>
                     
                     {% for choice in quiz[1] %}
-                            <input type="radio" name="choice" value="{{ choice[0] }}">{{ choice[1] }}<br>
+                        <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" required>{{ choice[2] }}<br>
                     {% endfor %}
                     
                     <p>
                     
-                    <input type="submit" value="Vastaa"> <br>
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                </form>
-                <hr>
-            {% endfor %}
+                    <hr>
+                    <input type="hidden" name="quizzes" value="{{ quiz[0][0] }}">
+                {% endfor %}
+                <input type="submit" value="Lähetä vastaukset"> <br>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="course_id" value="{{ course[0] }}">
+                <input type="hidden" name="exercise_type" value="1">
+                
+            </form>
         
         {% endif %}
+
+        <hr>
 
         <h3>Tekstikenttätehtävät</h3>
         <p>Ehkä tähänkin jotain ohjeistusta?</p>
@@ -171,18 +176,20 @@
 
         {% else %}
 
-            {% for text in text_exercises %}
-                <form action="/anser_to_exercise" method="post">
-                    Pisteet: {{ text[1] }}
-                    Kysymys: {{ text[2] }}
+            <form action="/answer_to_exercises" method="post">
+                {% for text_question in text_exercises %}
+                    Pisteet: {{ text_question[1] }}
+                    Kysymys: {{ text_question[2] }}
+                    <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" required><br></p>
                     
-                    <p>Vastaus: <input type="text" name="answer"><br></p>
-                    
-                    <input type="submit" value="Vastaa"> <br>
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                </form>
-                <hr>
-            {% endfor %}
+                    <hr>
+                    <input type="hidden" name="texts" value="{{ text_question[0] }}">
+                {% endfor %}
+                <input type="submit" value="Lähetä vastaukset"> <br>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="course_id" value="{{ course[0] }}">
+                <input type="hidden" name="exercise_type" value="2">
+            </form>
 
         {% endif %}
 

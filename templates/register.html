@@ -4,18 +4,18 @@
 
 <form action="/register" method="post">
     <p>Luo uusi tunnus</p>
-    Tunnus: <input type="text" name="username"> <br>
+    Tunnus: <input type="text" name="username" required> <br>
     Huom, tunnuksen täytyy olla 3-20 merkkiä pitkä!
     <p>
-    Salasana: <input type="password" name="password"> <br>
+    Salasana: <input type="password" name="password" required> <br>
     Huom, salasanan täytyy olla 8-20 merkkiä pitkä!
     <p>
-    Toista salasana: <input type="password" name="password_again"> <br>
+    Toista salasana: <input type="password" name="password_again" required> <br>
     <p>
     Valitse käyttäjätyyppi:
     <p>
-    <input type="radio" name="usertype" value="1"> Opettaja
-    <input type="radio" name="usertype" value="2"> Opiskelija
+    <input type="radio" name="usertype" value="1" required> Opettaja
+    <input type="radio" name="usertype" value="2" required> Opiskelija
     <p>
     <input type="submit" value="Luo tunnus">
     <!--Eikai tämä tarvitse CSRF-tokenia?-->

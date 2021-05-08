@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect, session
-import users, courses, coursematerials, exercises
+import users, courses, coursematerials, exercises, answers
 
 
 # Sivuja
@@ -58,17 +58,22 @@ def exercise_page(id):
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if request.form["exercise_type"] == "1":
+        exercise_type = int(request.form["exercise_type"])
+        if exercise_type == 1:
             right_choice = request.form["right_choice"]
             wrong_choices = request.form.getlist("wrong_choice")
-            if not exercises.add_quiz_exercise(id, int(request.form["exercise_type"]), int(request.form["points"]), request.form["question"], request.form["right_feedback"], request.form["false_feedback"], right_choice, wrong_choices):
+            if not exercises.add_quiz_exercise(id, exercise_type, int(request.form["points"]), request.form["question"], request.form["right_feedback"], request.form["false_feedback"], right_choice, wrong_choices):
                 fail = True
-        if request.form["exercise_type"] == "2":
-            if not exercises.add_text_exercise(id, int(request.form["exercise_type"]), int(request.form["points"]), request.form["question"], request.form["right_text"], request.form["right_feedback"], request.form["false_feedback"]):
+        if exercise_type == 2:
+            if not exercises.add_text_exercise(id, exercise_type, int(request.form["points"]), request.form["question"], request.form["right_text"], request.form["right_feedback"], request.form["false_feedback"]):
                 fail = True
     if fail:
         return render_template("error.html", message="Tehtävän lisääminen epäonnistui!")
-    else:    
+    else:
+        
+        #if student_has_answered_quizzes
+        #if student_has_answered_text_exercises
+
         course = courses.get_course(id)
         
         quiz_exercises = exercises.get_all_quiz_exercises(id)
@@ -160,6 +165,31 @@ def signup(id):
     else:
         return render_template("error.html", message="Kurssille ilmoittautuminen ei onnistunut")
 
+@app.route("/answer_to_exercises", methods=["post"])
+def answer_to_exercises():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    
+    user_id = users.user_id()
+    course_id = request.form["course_id"]
+    exercise_type = int(request.form["exercise_type"])
+
+    if exercise_type == 1:
+        all_answers = []
+        all_quizzes = request.form.getlist("quizzes")
+        for exercise_id in all_quizzes:
+            all_answers.append(request.form[f"choice_{exercise_id}"])
+
+    if exercise_type == 2:
+        all_answers = []
+        all_text_exercises = request.form.getlist("texts")
+        for exercise_id in all_text_exercises:
+            all_answers.append((exercise_id, request.form[f"answer_{exercise_id}"]))
+    
+    if answers.save_answers(exercise_type, user_id, all_answers, course_id):
+        return redirect(f"/course/{course_id}/exercises")
+    else:
+        return render_template("error.html", message="Vastausten tallentaminen ei onnistunut!")
 
 # Kirjautumiseen liittyvät
 

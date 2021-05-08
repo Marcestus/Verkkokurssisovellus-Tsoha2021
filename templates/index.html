@@ -15,7 +15,7 @@
 
         <form action="/newcourse" method="post">
             <p>Luo uusi kurssi</p>
-            Kurssin nimi: <input type="text" name="coursename">
+            Kurssin nimi: <input type="text" name="coursename" required>
             <input type="submit" value="Luo kurssi"> <br>
             Huom, nimen täytyy olla 3-100 merkkiä pitkä!
             <p>
@@ -47,9 +47,9 @@
 
 <form action="/login" method="post">
     <p>Kirjaudu sisään</p>
-    Tunnus: <input type="text" name="username">
+    Tunnus: <input type="text" name="username" required>
     <p>
-    Salasana: <input type="password" name="password">
+    Salasana: <input type="password" name="password" required>
     <p>
     <input type="submit" value="Kirjaudu">
     <!--Eikai tämä tarvitse CSRF-tokenia?-->
