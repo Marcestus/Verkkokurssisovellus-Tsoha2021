@@ -18,8 +18,9 @@ def add_quiz_exercise(course_id, exercisetype, points, question, right_feedback,
         sql = "INSERT INTO Choices (exercise_id, choice, correctness) VALUES (:exercise_id, :right_choice, TRUE)"
         db.session.execute(sql, {"exercise_id":exercise_id, "right_choice":right_choice})
         for choice in wrong_choices:
-            sql = "INSERT INTO Choices (exercise_id, choice, correctness) VALUES (:exercise_id, :choice, FALSE)"
-            db.session.execute(sql, {"exercise_id":exercise_id, "choice":choice})
+            if len(choice) != 0:
+                sql = "INSERT INTO Choices (exercise_id, choice, correctness) VALUES (:exercise_id, :choice, FALSE)"
+                db.session.execute(sql, {"exercise_id":exercise_id, "choice":choice})
         db.session.commit()
     except:
         return False

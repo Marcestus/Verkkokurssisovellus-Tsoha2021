@@ -40,8 +40,8 @@ CREATE TABLE Exercises (
     points INTEGER,
     question TEXT NOT NULL,
     right_text TEXT,
-    right_feedback TEXT DEFAULT 'Oikein!',
-    false_feedback TEXT DEFAULT 'Väärin!'
+    right_feedback TEXT,
+    false_feedback TEXT
 );
 CREATE TABLE Choices (
     id SERIAL PRIMARY KEY,
@@ -52,6 +52,8 @@ CREATE TABLE Choices (
 CREATE TABLE Answers (
     student_id INTEGER REFERENCES Users,
     exercise_id INTEGER REFERENCES Exercises,
+    choice_id INTEGER REFERENCES Choices,
+    text_answer TEXT,
     answer_right BOOLEAN
 );
 CREATE TABLE Done_exercises (

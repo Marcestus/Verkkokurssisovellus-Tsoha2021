@@ -48,9 +48,15 @@ def course_page(id):
             slot_add_ok = True
         return render_template("course.html", course=course, coursematerial=coursematerial, no_material=no_material, slot_add_ok=slot_add_ok)
 
+
+@app.route("/course/<int:course_id>/exercises/results/<int:user_id>")
+def results_page(course_id, user_id):
+    return render_template("results.html", course_id=course_id, user_id=user_id)
+
 @app.route("/course/<int:id>/exercises", methods=["get", "post"])
 def exercise_page(id):
     # Suojaus: vain kirjautuneet saa päästä sivuille
+    # Suojaus: vain kyseiselle kurssille ilmoittautuneet oppilaat pääsee vastaamaan tehtäviin
     # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
     fail = False
     if request.method == "POST":
@@ -62,10 +68,12 @@ def exercise_page(id):
         if exercise_type == 1:
             right_choice = request.form["right_choice"]
             wrong_choices = request.form.getlist("wrong_choice")
-            if not exercises.add_quiz_exercise(id, exercise_type, int(request.form["points"]), request.form["question"], request.form["right_feedback"], request.form["false_feedback"], right_choice, wrong_choices):
+            if not exercises.add_quiz_exercise(id, exercise_type, int(request.form["points"]), request.form["question"],
+                request.form["right_feedback"], request.form["false_feedback"], right_choice, wrong_choices):
                 fail = True
         if exercise_type == 2:
-            if not exercises.add_text_exercise(id, exercise_type, int(request.form["points"]), request.form["question"], request.form["right_text"], request.form["right_feedback"], request.form["false_feedback"]):
+            if not exercises.add_text_exercise(id, exercise_type, int(request.form["points"]), request.form["question"],
+                request.form["right_text"], request.form["right_feedback"], request.form["false_feedback"]):
                 fail = True
     if fail:
         return render_template("error.html", message="Tehtävän lisääminen epäonnistui!")
@@ -73,9 +81,12 @@ def exercise_page(id):
         
         #if student_has_answered_quizzes
         #if student_has_answered_text_exercises
+        #if student_has_passed_the_course
+        #-> answer_feedback, not allowed to answer again, points showing, whether course is passed or not
 
         course = courses.get_course(id)
-        
+        user_id = users.user_id()
+
         quiz_exercises = exercises.get_all_quiz_exercises(id)
         quizzes_and_choises = []
         for quiz in quiz_exercises:
@@ -83,25 +94,39 @@ def exercise_page(id):
             quizzes_and_choises.append((quiz, choices))
         text_exercises = exercises.get_all_text_exercises(id)
 
-        if len(quizzes_and_choises) == 0:
-            no_quizzes = True
-        else:
-            no_quizzes = False
-        if len(text_exercises) == 0:
-            no_texts = True
-        else:
-            no_texts = False
-        if exercises.get_amount_of_exercises(id) == 20:
-            exercise_add_ok = False
-        else:
-            exercise_add_ok = True
-        return render_template("exercises.html", course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises, exercise_add_ok=exercise_add_ok, no_quizzes=no_quizzes, no_texts=no_texts)
+        no_quizzes = (len(quizzes_and_choises) == 0)
+        no_text_exercises = (len(text_exercises) == 0)
+        all_exercise_slots_used = (exercises.get_amount_of_exercises(id) == 20)
 
-@app.route("/statistics/<int:id>")
-def statistics(id):
-    # Suojaus: vain käyttäjä itse saa päästä omalle sivulleen
-    return render_template("statistics.html", id=id)
+        all_quizzes_answered = answers.all_exercises_answered(user_id, id, 1)
+        all_text_exercises_answered = answers.all_exercises_answered(user_id, id, 2)
+        
+        all_exercises_answered = all_quizzes_answered and all_text_exercises_answered
+        course_passed = answers.course_already_passed(user_id, id)
+        passgrade = answers.get_passgrade(id)
+        max_points = answers.get_max_points(id)
+        user_points = answers.get_user_points(user_id, id)
+        passgrade_in_points = answers.get_passgrade_in_points(user_id, id)
 
+        correct_quiz_answers = []
+        correct_text_exercise_answers = []
+        all_quiz_answers = []
+        all_text_exercise_answers = []
+        if all_quizzes_answered:
+            correct_quiz_answers = answers.get_correct_answers(user_id, id, 1)
+            all_quiz_answers = answers.get_all_answers(user_id, id, 1)
+        if all_text_exercises_answered:
+            all_text_exercise_answers = answers.get_all_answers(user_id, id, 2)
+        
+        return render_template("exercises.html",
+            course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises,
+            no_quizzes=no_quizzes, no_text_exercises=no_text_exercises, all_exercise_slots_used=all_exercise_slots_used,
+            all_quizzes_answered=all_quizzes_answered, all_text_exercises_answered=all_text_exercises_answered,
+            all_exercises_answered=all_exercises_answered, course_passed=course_passed,
+            passgrade=passgrade, passgrade_in_points=passgrade_in_points,
+            max_points=max_points, user_points=user_points,
+            correct_quiz_answers=correct_quiz_answers, all_quiz_answers=all_quiz_answers,
+            all_text_exercise_answers=all_text_exercise_answers)
 
 #Opettajan toimintoja
 
@@ -186,7 +211,7 @@ def answer_to_exercises():
         for exercise_id in all_text_exercises:
             all_answers.append((exercise_id, request.form[f"answer_{exercise_id}"]))
     
-    if answers.save_answers(exercise_type, user_id, all_answers, course_id):
+    if answers.save_answers(user_id, course_id, exercise_type, all_answers):
         return redirect(f"/course/{course_id}/exercises")
     else:
         return render_template("error.html", message="Vastausten tallentaminen ei onnistunut!")
