@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect, session
-import users, courses, coursematerials
+import users, courses, coursematerials, exercises
 
 
 # Sivuja
@@ -19,9 +19,9 @@ def index():
         return render_template("index.html")
 
 @app.route("/course/<int:id>", methods=["get", "post"])
-def course(id):
+def course_page(id):
     # Suojaus: vain kirjautuneet saa päästä sivuille
-    # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen sivulle
+    # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
     fail = False
     if request.method == "POST":
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
@@ -47,6 +47,50 @@ def course(id):
         else:
             slot_add_ok = True
         return render_template("course.html", course=course, coursematerial=coursematerial, no_material=no_material, slot_add_ok=slot_add_ok)
+
+@app.route("/course/<int:id>/exercises", methods=["get", "post"])
+def exercise_page(id):
+    # Suojaus: vain kirjautuneet saa päästä sivuille
+    # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
+    fail = False
+    if request.method == "POST":
+        
+        # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        if request.form["exercise_type"] == "1":
+            right_choice = request.form["right_choice"]
+            wrong_choices = request.form.getlist("wrong_choice")
+            if not exercises.add_quiz_exercise(id, int(request.form["exercise_type"]), int(request.form["points"]), request.form["question"], request.form["right_feedback"], request.form["false_feedback"], right_choice, wrong_choices):
+                fail = True
+        if request.form["exercise_type"] == "2":
+            if not exercises.add_text_exercise(id, int(request.form["exercise_type"]), int(request.form["points"]), request.form["question"], request.form["right_text"], request.form["right_feedback"], request.form["false_feedback"]):
+                fail = True
+    if fail:
+        return render_template("error.html", message="Tehtävän lisääminen epäonnistui!")
+    else:    
+        course = courses.get_course(id)
+        
+        quiz_exercises = exercises.get_all_quiz_exercises(id)
+        quizzes_and_choises = []
+        for quiz in quiz_exercises:
+            choices = exercises.get_all_choises(quiz[0])
+            quizzes_and_choises.append((quiz, choices))
+        text_exercises = exercises.get_all_text_exercises(id)
+
+        if len(quizzes_and_choises) == 0:
+            no_quizzes = True
+        else:
+            no_quizzes = False
+        if len(text_exercises) == 0:
+            no_texts = True
+        else:
+            no_texts = False
+        if exercises.get_amount_of_exercises(id) == 20:
+            exercise_add_ok = False
+        else:
+            exercise_add_ok = True
+        return render_template("exercises.html", course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises, exercise_add_ok=exercise_add_ok, no_quizzes=no_quizzes, no_texts=no_texts)
 
 @app.route("/statistics/<int:id>")
 def statistics(id):

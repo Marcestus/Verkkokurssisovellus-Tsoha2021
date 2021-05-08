@@ -1,0 +1,198 @@
+{% extends "layout.html" %}
+{% block title %}{{ course[1] }}{% endblock %}
+{% block content %}
+
+{% if session.user_id %}
+    {% if session.usertype == 1 %}
+
+        <h1>{{course[1]}}</h1>
+
+        <p>Geneeristä ohjeistusta tehtäviin?</p>
+
+        <hr>
+
+        <h3>Monivalintatehtävät</h3>
+        <p>Ehkä tähänkin jotain ohjeistusta?</p>
+
+        <hr>
+
+        {% if no_quizzes %}
+        
+            <p>Ei monivalintatehtäviä!</p>
+
+            <hr>
+
+        {% else %}
+
+            
+
+            {% for quiz in quizzes_and_choises %}
+
+                <form action="/anser_to_exercise" method="post">
+                    Pisteet: {{ quiz[0][1] }}
+                    Kysymys: {{ quiz[0][2] }}
+                    
+                    <p>
+                    
+                    {% for choice in quiz[1] %}
+                            <input type="radio" name="choice" value="{{ choice[0] }}">{{ choice[1] }}<br>
+                    {% endfor %}
+                    
+                    <p>
+                    
+                    Opettaja-roolissa ei voi vastata tehtäviin
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                </form>
+                <hr>
+
+            {% endfor %}
+        
+        {% endif %}
+
+        <h3>Tekstikenttätehtävät</h3>
+        <p>Ehkä tähänkin jotain ohjeistusta?</p>
+
+        <hr>
+
+        {% if no_texts %}
+
+            <p>Ei tekstikenttätehtäviä!</p>
+
+            <hr>
+
+        {% else %}
+
+            {% for text in text_exercises %}
+                <form action="/anser_to_exercise" method="post">
+                    Pisteet: {{ text[1] }}
+                    Kysymys: {{ text[2] }}
+                    
+                    <p>Vastaus: <input type="text" name="answer"><br></p>
+                    
+                    Opettaja-roolissa ei voi vastata tehtäviin
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                </form>
+                <hr>
+            {% endfor %}
+
+        {% endif %}
+
+        {% if exercise_add_ok %}
+            <h3>Lisää monivalintatehtävä</h3>
+            <form action="/course/{{ course[0] }}/exercises" method="POST">
+                <p>Pisteet (1-10): <input type="number" name="points" min="1" max="10"></p>
+                <p>Kysymys: <input type="text" name="question"></p>
+                <p>Oikea vastaus: <input type="text" name="right_choice"></p>
+                <p>Väärä vastaus: <input type="text" name="wrong_choice"></p>
+                <p>Väärä vastaus: <input type="text" name="wrong_choice"></p>
+                <p>Väärä vastaus: <input type="text" name="wrong_choice"></p>
+                <p>Oikean vastauksen palauteteksti (oletuksena "Oikein!"): <input type="text" name="right_feedback"></p>
+                <p>Väärän vastauksen palauteteksti (oletuksena "Väärin!"): <input type="text" name="false_feedback"></p>
+                <input type="submit" value="Lisää tehtävä">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="exercise_type" value=1>
+            </form>
+
+            <hr>
+
+            <h3>Lisää tekstikenttätehtävä</h3>
+            <p>Huom! Vastauksen pitää olla tismalleen oikein</p>
+            <form action="/course/{{ course[0] }}/exercises" method="POST">
+                <p>Pisteet (1-10): <input type="number" name="points" min="1" max="10"></p>
+                <p>Kysymys: <input type="text" name="question"></p>
+                <p>Oikea vastaus: <input type="text" name="right_text"></p>
+                <p>Oikean vastauksen palauteteksti (oletuksena "Oikein!"): <input type="text" name="right_feedback"></p>
+                <p>Väärän vastauksen palauteteksti (oletuksena "Väärin!"): <input type="text" name="false_feedback"></p>
+                <input type="submit" value="Lisää tehtävä">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="exercise_type" value=2>
+            </form>
+        
+        {% else %}
+
+            20 tehtävää on maksimi, et voi lisätä enempää!
+
+        {% endif %}
+
+    {% endif %}
+    
+    {% if session.usertype == 2 %}
+
+        <h1>{{course[1]}}</h1>
+
+        <p>Geneeristä ohjeistusta tehtäviin?</p>
+
+        <hr>
+
+        <h3>Monivalintatehtävät</h3>
+        <p>Ehkä tähänkin jotain ohjeistusta?</p>
+
+        <hr>
+
+        {% if no_quizzes %}
+        
+            <p>Ei monivalintatehtäviä!</p>
+
+            <hr>
+
+        {% else %}
+
+            {% for quiz in quizzes_and_choises %}
+                <form action="/anser_to_exercise" method="post">
+                    Pisteet: {{ quiz[0][1] }}
+                    Kysymys: {{ quiz[0][2] }}
+                    
+                    <p>
+                    
+                    {% for choice in quiz[1] %}
+                            <input type="radio" name="choice" value="{{ choice[0] }}">{{ choice[1] }}<br>
+                    {% endfor %}
+                    
+                    <p>
+                    
+                    <input type="submit" value="Vastaa"> <br>
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                </form>
+                <hr>
+            {% endfor %}
+        
+        {% endif %}
+
+        <h3>Tekstikenttätehtävät</h3>
+        <p>Ehkä tähänkin jotain ohjeistusta?</p>
+
+        <hr>
+
+        {% if no_texts %}
+
+            <p>Ei tekstikenttätehtäviä!</p>
+
+            <hr>
+
+        {% else %}
+
+            {% for text in text_exercises %}
+                <form action="/anser_to_exercise" method="post">
+                    Pisteet: {{ text[1] }}
+                    Kysymys: {{ text[2] }}
+                    
+                    <p>Vastaus: <input type="text" name="answer"><br></p>
+                    
+                    <input type="submit" value="Vastaa"> <br>
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                </form>
+                <hr>
+            {% endfor %}
+
+        {% endif %}
+
+    {% endif %}
+
+    
+{% else %}
+
+    Et ole kirjautunut! <br>
+    Joo tää pitää muuttaa järkevämmäksi
+
+{% endif %}
+{% endblock %}

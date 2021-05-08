@@ -6,11 +6,13 @@
     {% if session.usertype == 1 %}
 
         <h1>{{course[1]}}</h1>
-        <p>Läpipääsyraja: {{course[3]}}</p>
+        <p>Läpipääsyraja: {{course[3]}} % tehtäväpisteistä</p>
         <p style="white-space: pre-line">{{ course[4] }}</p>
         <a href="/update_intro/{{ course[0] }}">Muokkaa</a>
 
         <hr>
+
+        <p><a href="/course/{{ course[0] }}/exercises">Kurssin tehtävät</a></p>
 
         {% if not slot_add_ok %}
         
@@ -54,18 +56,17 @@
 
         {% endif %}
 
-        Ja tänne tehtävät
-
     {% endif %}
     
     {% if session.usertype == 2 %}
 
         <h1>{{course[1]}}</h1>
-        <p>Läpipääsyraja: {{course[3]}}</p>
+        <p>Läpipääsyraja: {{course[3]}} % tehtäväpisteistä</p>
+        <p style="white-space: pre-line">{{ course[4] }}</p>
 
         <hr>
 
-        <p style="white-space: pre-line">{{ course[4] }}</p>
+        <p><a href="/course/{{ course[0] }}/exercises">Kurssin tehtävät</a></p>
 
         <hr>
 
@@ -75,8 +76,6 @@
             <p>
             <hr>
         {% endfor %}
-
-        Ja tänne tehtävät
 
     {% endif %}
 
