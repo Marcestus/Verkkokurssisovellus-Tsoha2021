@@ -2,8 +2,6 @@
 {% block title %}Kurssin johdannon päivitys{% endblock %}
 {% block content %}
 
-{% if session.user_id and session.usertype == 1 %}
-
     <h1>{{ course[1] }}</h1>
 
     <form action="/course/{{ course[0] }}" method="post">
@@ -13,12 +11,6 @@
         <input type="hidden" name="update_type" value="intro_update">
     </form>
 
-{% else %}
-
-    Et ole kirjautunut tai opettaja! <br>
-    Joo tää pitää muuttaa järkevämmäksi
-
-{% endif %}
 {% endblock %}
 
 

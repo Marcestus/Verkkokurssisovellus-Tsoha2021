@@ -127,3 +127,8 @@ def check_for_signup(user_id, course_id):
     sql = "SELECT 1 FROM Participants WHERE student_id=:user_id AND course_id=:course_id"
     result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
     return result.fetchone() != None
+
+def check_for_ownership(user_id, course_id):
+    sql = "SELECT 1 FROM Courses WHERE owner_id=:user_id AND id=:course_id"
+    result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
+    return result.fetchone() != None

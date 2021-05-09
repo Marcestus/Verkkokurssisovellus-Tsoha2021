@@ -57,6 +57,6 @@ def get_all_text_exercises(course_id):
     return random.sample(random_order, len(random_order))
 
 def get_amount_of_exercises(course_id):
-    sql = "SELECT COUNT(*) FROM Exercises WHERE course_id=:course_id AND VISIBLE=TRUE"
+    sql = "SELECT COUNT(*) FROM Exercises WHERE course_id=:course_id"
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchone()[0]

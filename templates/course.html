@@ -7,8 +7,11 @@
 
 {% block content %}
 
-{% if session.user_id %}
-    {% if session.usertype == 1 %}
+{% if course_visible %}
+
+    {% if session.usertype == 1%}
+
+    {% if course_owner %}
 
         <h1>{{course[1]}}</h1>
         
@@ -71,6 +74,12 @@
 
         {% endif %}
 
+        {% else %}
+
+        Et ole kurssin opettaja!
+
+        {% endif %}
+
     {% endif %}
     
     {% if session.usertype == 2 %}
@@ -97,11 +106,11 @@
 
     {% endif %}
 
-    
+
 {% else %}
 
-    Et ole kirjautunut! <br>
-    Joo tää pitää muuttaa järkevämmäksi
+Pahoittelut, kurssia ei löytynyt!
 
 {% endif %}
+
 {% endblock %}

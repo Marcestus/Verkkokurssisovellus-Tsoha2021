@@ -7,8 +7,10 @@
 
 {% block content %}
 
-{% if session.user_id %}
+{% if course_visible %}
     {% if session.usertype == 1 %}
+
+    {% if course_owner %}
 
         <h1>{{course[1]}}</h1>
         <p>Geneeristä ohjeistusta tehtäviin?</p>
@@ -51,7 +53,7 @@
         
         {% endif %}
 
-        {% if not all_exercise_slots_used and not course_published %}
+        {% if not course_published %}
             <h3>Lisää monivalintatehtävä</h3>
             <form action="/course/{{ course[0] }}/exercises" method="POST">
                 <label for="points">Pisteet (1-10 pistettä):</label>
@@ -105,7 +107,7 @@
 
         {% endif %}
 
-        {% if not all_exercise_slots_used and not course_published %}
+        {% if not course_published %}
             <h3>Lisää tekstikenttätehtävä</h3>
             <form action="/course/{{ course[0] }}/exercises" method="POST">
                 <label for="points">Pisteet (1-10 pistettä):</label>
@@ -125,10 +127,11 @@
         
         {% endif %}
 
-        {% if all_exercise_slots_used %}
-            20 tehtävää on maksimi, et voi lisätä enempää!
-        {% endif %}
+        {% else %}
 
+        Et ole kurssin opettaja!
+
+        {% endif %}
     {% endif %}
     
     {% if session.usertype == 2 %}
@@ -303,8 +306,7 @@
     
 {% else %}
 
-    Et ole kirjautunut! <br>
-    Joo tää pitää muuttaa järkevämmäksi
+Pahoittelut, kurssia ei löytynyt!
 
 {% endif %}
 {% endblock %}

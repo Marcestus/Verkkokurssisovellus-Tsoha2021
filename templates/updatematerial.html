@@ -2,8 +2,6 @@
 {% block title %}Kurssimateriaalin päivitys{% endblock %}
 {% block content %}
 
-{% if session.user_id and session.usertype == 1 %}
-
     <h1>{{ course[1] }}</h1>
     <form action="/course/{{ course[0] }}" method="post">
         <textarea name="title" rows="1" cols="75" maxlength="100">{{ material[1] }}</textarea><br>
@@ -14,12 +12,6 @@
         <input type="hidden" name="update_type" value="material_update">
     </form>
 
-{% else %}
-
-    Et ole kirjautunut tai opettaja! <br>
-    Joo tää pitää muuttaa järkevämmäksi
-
-{% endif %}
 {% endblock %}
 
 

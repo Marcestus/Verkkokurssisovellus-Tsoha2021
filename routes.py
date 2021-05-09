@@ -7,7 +7,6 @@ import users, courses, coursematerials, exercises, answers, statistics
 
 @app.route("/")
 def index():
-    # Suojaus: tehty html-puolella, pitänee siirtää toiminnallisuudet tänne?
     if users.get_usertype() == 1:
         open_courses_teacher = courses.get_open_courses_teacher()
         unpublished_courses = courses.get_unpublished_courses()
@@ -32,8 +31,10 @@ def index():
 
 @app.route("/course/<int:id>", methods=["get", "post"])
 def course_page(id):
-    # Suojaus: vain kirjautuneet saa päästä sivuille
-    # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+
     fail = False
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
@@ -48,21 +49,23 @@ def course_page(id):
     if fail:
         return render_template("error.html", message="Kurssimateriaalin päivittäminen ei onnistunut!")
     else:
-        user_id = users.get_user_id()
         course = courses.get_course(id)
         course_published = course[5]
+        course_visible = course[6]
+        course_owner = courses.check_for_ownership(user_id, id)
         coursematerial = coursematerials.get_all_coursematerials(id)
         course_statistics = statistics.get_course_status(user_id, id)
         no_material = (len(coursematerial) == 0)
         no_more_material = (coursematerials.get_amount_of_material_slots(id) == 10)
-        return render_template("course.html", course=course, course_published=course_published, coursematerial=coursematerial, course_statistics=course_statistics,
-            no_material=no_material, no_more_material=no_more_material)
+        return render_template("course.html", course=course, course_published=course_published, course_visible=course_visible, course_owner=course_owner,
+            coursematerial=coursematerial, course_statistics=course_statistics, no_material=no_material, no_more_material=no_more_material)
 
 @app.route("/course/<int:id>/exercises", methods=["get", "post"])
 def exercise_page(id):
-    # Suojaus: vain kirjautuneet saa päästä sivuille
-    # Suojaus: vain kyseiselle kurssille ilmoittautuneet oppilaat pääsee vastaamaan tehtäviin
-    # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+
     fail = False
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
@@ -81,8 +84,6 @@ def exercise_page(id):
     if fail:
         return render_template("error.html", message="Tehtävän lisääminen epäonnistui!")
     else:
-        user_id = users.get_user_id()
-        
         course = courses.get_course(id)
         quiz_exercises = exercises.get_all_quiz_exercises(id)
         quizzes_and_choises = []
@@ -93,8 +94,9 @@ def exercise_page(id):
 
         no_quizzes = (len(quizzes_and_choises) == 0)
         no_text_exercises = (len(text_exercises) == 0)
-        all_exercise_slots_used = (exercises.get_amount_of_exercises(id) == 20)
         course_published = course[5]
+        course_visible = course[6]
+        course_owner = courses.check_for_ownership(user_id, id)
         student_signedup = courses.check_for_signup(user_id, id)
 
         all_quizzes_answered = statistics.all_exercises_answered(user_id, id, 1)
@@ -114,8 +116,8 @@ def exercise_page(id):
         
         return render_template("exercises.html",
             course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises,
-            no_quizzes=no_quizzes, no_text_exercises=no_text_exercises, all_exercise_slots_used=all_exercise_slots_used,
-            course_published=course_published, student_signedup=student_signedup,
+            no_quizzes=no_quizzes, no_text_exercises=no_text_exercises, course_visible=course_visible,
+            course_published=course_published, course_owner=course_owner, student_signedup=student_signedup,
             all_quizzes_answered=all_quizzes_answered, all_text_exercises_answered=all_text_exercises_answered,
             course_statistics=course_statistics, correct_quiz_answers=correct_quiz_answers,
             all_quiz_answers=all_quiz_answers, all_text_exercise_answers=all_text_exercise_answers)
@@ -125,9 +127,12 @@ def exercise_page(id):
 
 @app.route("/newcourse", methods=["post"])
 def newcourse():
-    # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+    
     coursename = request.form["coursename"]
     if courses.create_new(coursename):
         return redirect("/")
@@ -136,9 +141,15 @@ def newcourse():
 
 @app.route("/update_passgrade", methods=["post"])
 def update_passgrade():
-    # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+    
     new_passgrade = request.form["passgrade"]
     course_id = request.form["course_id"]
     if courses.update_passgrade(course_id, new_passgrade):
@@ -148,20 +159,38 @@ def update_passgrade():
 
 @app.route("/update_intro/<int:course_id>")
 def update_intro(course_id):
-    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
+
     course = courses.get_course(course_id)
     return render_template("updateintro.html", course=course)
 
 @app.route("/update_material/<int:course_id>/<int:material_id>")
 def update_material(course_id, material_id):
-    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
+
     course = courses.get_course(course_id)
     material = coursematerials.get_material(material_id)
     return render_template("updatematerial.html", course=course, material=material)
 
 @app.route("/modify_coursematerial_order/<int:course_id>/<int:material_id>/<string:modify_type>")
 def modify_coursematerial_order(course_id, material_id, modify_type):
-    # Suojaus: vain (kirjautunut) opettaja saa päästä tänne
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
+
     slotcount = coursematerials.get_amount_of_material_slots(course_id)
     if modify_type != "delete" and slotcount >= 10:
         return render_template("error.html", message="Et voi lisätä uusia osioita, maksimimäärä on 10!")
@@ -172,19 +201,37 @@ def modify_coursematerial_order(course_id, material_id, modify_type):
 
 @app.route("/hide/<int:course_id>/<int:exercise_id>")
 def hide_exercise(course_id, exercise_id):
-    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
+    
     exercises.hide_exercise(exercise_id)
     return redirect(f"/course/{course_id}/exercises")
 
 @app.route("/publish/<int:course_id>")
 def publish_course(course_id):
-    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
+
     courses.publish_course(course_id)
     return redirect("/")
 
 @app.route("/hide/<int:course_id>")
 def hide_course(course_id):
-    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_owner = courses.check_for_ownership(user_id, course_id)
+    if not course_owner:
+        return render_template("error.html", message="Et ole kurssin opettaja!")
+
     courses.hide_course(course_id)
     return redirect("/")
 
@@ -193,7 +240,10 @@ def hide_course(course_id):
 
 @app.route("/signup/<int:id>")
 def signup(id):
-    # Suojaus: vain (kirjautunut) opiskelija voi ilmoittautua kursseille
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    
     if courses.signup_to_course(id):
         return redirect("/")
     else:
@@ -201,11 +251,15 @@ def signup(id):
 
 @app.route("/answer_to_exercises", methods=["post"])
 def answer_to_exercises():
-    # Suojaus: vain kyseiselle kurssille ilmoittautunut (kirjautunut) opiskelija
+    user_id = users.get_user_id()
+    if user_id == 0:
+        return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    user_signedup = courses.check_for_signup(user_id, course_id)
+    if not user_signedup:
+        return render_template("error.html", message="Ilmoittaudu ensin kurssille!")
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     
-    user_id = users.get_user_id()
     course_id = request.form["course_id"]
     exercise_type = int(request.form["exercise_type"])
 
@@ -229,7 +283,6 @@ def answer_to_exercises():
 
 @app.route("/login", methods=["get", "post"])
 def login():
-    # Suojaus: tässä taitaa olla kaikki ihan kunnossa
     if request.method == "GET":
         return render_template("login.html")
     if request.method == "POST":
@@ -242,13 +295,11 @@ def login():
 
 @app.route("/logout")
 def logout():
-    # Suojaus: tässä taitaa olla kaikki ihan kunnossa
     users.logout()
     return redirect("/")
 
 @app.route("/register", methods=["get", "post"])
 def register():
-    # Suojaus: ei tarvetta, kuka vaan voi päästä tänne
     if request.method == "GET":
         return render_template("register.html")
     if request.method == "POST":
