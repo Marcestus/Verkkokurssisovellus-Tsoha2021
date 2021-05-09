@@ -8,6 +8,7 @@
 {% block content %}
 
     <h1>{{ course[1] }}</h1>
+    
     <form action="/course/{{ course[0] }}" method="post">
         <textarea name="title" rows="1" cols="75" maxlength="100">{{ material[1] }}</textarea><br>
         <textarea name="content" rows="25" cols="75" maxlength="10000">{{ material[2] }}</textarea><br>

@@ -1,21 +1,21 @@
 {% extends "layout.html" %}
-{% block title %}Kirjautuminen{% endblock %}
+{% block title %}{% endblock %}
 {% block content %}
 
 {% if session.user_id %}
 
     <h4>Tervetuloa {{ session.username }}!</h4>
 
+    <!-- Opettajan näkymä -->
     {% if session.usertype == 1 %}
-
         <p>Tällä sivulla voit hallita omia kurssisivujasi. Muistathan, että julkaistuasi kurssin, et voi enää muokata sen tehtäviä tai läpipääsyrajaa.
             Materiaalia voi muokata julkaisusta huolimatta.</p>
-
         <h4>Työn iloa!</h4>
 
         <hr>
 
         <h3>Käynnissä olevat kurssit</h3>
+
         <hr>
         {% for course in open_courses_teacher %}
             <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a>
@@ -30,6 +30,7 @@
         {% endfor %}
 
         <h3>Julkaisemattomat kurssit</h3>
+
         <hr>
         {% for course in unpublished_courses %}
             <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a>
@@ -44,17 +45,18 @@
             <input id="button" type="submit" value="Luo kurssi">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
-
     {% endif %}
 
+    <!-- Opiskelijan näkymä -->
     {% if session.usertype == 2 %}
-
         <p>Tällä sivulla näet meneillään olevia kursseja ja pääset ilmoittautumaan niille. Muistathan, että että voi vastata kurssin tehtäviin vasta,
             kun olet ilmoittautunut sille. Materiaalia voi tutkiskella myös ilmoittautumatta.</p>
-
         <h4>Opiskelun iloa!</h4>
         
+        <hr>
+
         <h3>Keskeneräiset kurssit</h3>
+        
         <hr>
         {% for course in uncompleted_courses %}
             <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a></p>
@@ -62,6 +64,7 @@
         {% endfor %}
         
         <h3>Avoimet kurssit</h3>
+
         <hr>
         {% for course in open_courses %}
             <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a>
@@ -69,28 +72,24 @@
         {% endfor %}
 
         <h3>Valmiit kurssit</h3>
+
         <hr>
         {% for course in completed_courses %}
             <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a></p>
             <hr>
         {% endfor %}
-
     {% endif %}
 
 {% else %}
 
-
-<h1>Tervetuloa verkkokurssisovellukseen!</h1>
-
-<p>Sovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja opiskelijat suorittaa.
-    Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden määrän ja hyväksyttyjen suoritusten määrän.
-    Vastaavasti opiskelijat näkevät kurssisivuilla tilastoja omasta etenemisestään.</p>
-<p>Huomioithan, että opiskelijana voit suorittaa tehtäviä vain ilmoittautumalla ensin kurssille.</p>
-
-<p>Aloita kirjautumalla sisään tai luomalla tunnus.</p>
-
-<h4>Opiskelun iloa!</h4>
+    <!-- Sovelluksen etusivu -->
+    <h1>Tervetuloa verkkokurssisovellukseen!</h1>
+    <p>Sovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja opiskelijat suorittaa.
+        Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden määrän ja hyväksyttyjen suoritusten määrän.
+        Vastaavasti opiskelijat näkevät kurssisivuilla tilastoja omasta etenemisestään.</p>
+    <p>Huomioithan, että opiskelijana voit suorittaa tehtäviä vain ilmoittautumalla ensin kurssille.</p>
+    <p>Aloita kirjautumalla sisään tai luomalla tunnus.</p>
+    <h4>Opiskelun iloa!</h4>
 
 {% endif %}
-
 {% endblock %}

@@ -6,118 +6,92 @@
 {% endblock %}
 
 {% block content %}
-
 {% if course_visible %}
 
-    {% if session.usertype == 1%}
+<!-- Opettajan näkymä -->
+{% if session.usertype == 1%}
+{% if course_owner %}
 
-    {% if course_owner %}
+    <h1>{{course[1]}}</h1>
+    <p>Tällä sivulla pääset muokkaamaan kurssimateriaalia ja sekä kurssin läpipääsyrajaa. Huomioithan, että materiaaliosioiden maksimimäärä on 10 kappaletta.
+        Maksimipisteet määräytyvät suoraan tehtäväpisteistä.</p>
+    <h4>Työn iloa!</h4>
 
-        <h1>{{course[1]}}</h1>
-
-        <p>Tällä sivulla pääset muokkaamaan kurssimateriaalia ja sekä kurssin läpipääsyrajaa. Huomioithan, että materiaaliosioiden maksimimäärä on 10 kappaletta.
-            Maksimipisteet määräytyvät suoraan tehtäväpisteistä.</p>
-
-        <h4>Työn iloa!</h4>
-
-        <hr>
-        
-        <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
-        <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
-
-        {% if not course_published %}
-            <form action="/update_passgrade" method="post">
-                <label for="passgrade">Muuta läpipääsyrajaa (1-100 %):</label>
-                <input type="number" name="passgrade" min="1" max="100">
-                <input id="button" type="submit" value="Päivitä raja">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                <input type="hidden" name="course_id" value="{{ course[0] }}">
-            </form>
-        {% endif %}
-
-        <hr>
-
-        <p style="white-space: pre-line">{{ course[4] }}</p>
-        <a href="/update_intro/{{ course[0] }}">Muokkaa</a>
-
-        <hr>
-
-        {% if no_more_material %}
-        
-            <p>Osioiden maksimimäärä saavutettu! Poista osio, jos haluat lisätä uuden</p>
-            
-            <hr>
-            
-        {% endif %}
-
-        {% if no_material %}
-
-            <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_first">Lisää uusi osio</a></p>
-        
-        {% else %}
-
-            {% for material in coursematerial %}
-
-                {% if not no_more_material %}
-                    <p><a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/add_middle">Lisää uusi osio</a></p>
-                
-                    <hr>
-                {% endif %}
-
-                <h3 style="white-space: pre-line">{{ material[1] }}</h3>
-                <p style="white-space: pre-line">{{ material[2] }}</p>
-                <a href="/update_material/{{ course[0] }}/{{ material[0] }}">Muokkaa</a>
-                <a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/delete">Poista</a>
-                <p>
-
-                <hr>
-            {% endfor %}
-            
-            {% if not no_more_material %}
-                <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_last">Lisää uusi osio</a></p>
-
-                <hr>
-            {% endif %}
-
-        {% endif %}
-
-        {% else %}
-
-        Et ole kurssin opettaja!
-
-        {% endif %}
-
-    {% endif %}
+    <hr>
     
-    {% if session.usertype == 2 %}
-
-        <h1>{{course[1]}}</h1>
-        
-        <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
-        <p>Omat pisteet: {{ course_statistics[1] }}</p>
-        <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
-        <p>Kurssin status: {{ course_statistics[4] }}</p>
-
-        <hr>
-
-        <p style="white-space: pre-line">{{ course[4] }}</p>
-
-        <hr>
-
-        {% for material in coursematerial %}
-            <h3 style="white-space: pre-line">{{ material[1] }}</h3>
-            <p style="white-space: pre-line">{{ material[2] }}</p>
-            <p>
-            <hr>
-        {% endfor %}
-
+    <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
+    <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
+    {% if not course_published %}
+    <form action="/update_passgrade" method="post">
+        <label for="passgrade">Muuta läpipääsyrajaa (1-100 %):</label>
+        <input type="number" name="passgrade" min="1" max="100">
+        <input id="button" type="submit" value="Päivitä raja">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="course_id" value="{{ course[0] }}">
+    </form>
     {% endif %}
 
+    <hr>
 
+    <p style="white-space: pre-line">{{ course[4] }}</p>
+    <a href="/update_intro/{{ course[0] }}">Muokkaa</a>
+
+    <hr>
+
+    {% if no_more_material %}
+    <p>Osioiden maksimimäärä saavutettu! Poista osio, jos haluat lisätä uuden</p>
+    <hr>
+    {% endif %}
+
+    {% if no_material %}
+    <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_first">Lisää uusi osio</a></p>
+    {% else %}
+    {% for material in coursematerial %}
+        {% if not no_more_material %}
+        <p><a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/add_middle">Lisää uusi osio</a></p>
+        <hr>
+        {% endif %}
+        <h3 style="white-space: pre-line">{{ material[1] }}</h3>
+        <p style="white-space: pre-line">{{ material[2] }}</p>
+        <a href="/update_material/{{ course[0] }}/{{ material[0] }}">Muokkaa</a>
+        <a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/delete">Poista</a>
+        <p>
+        <hr>
+    {% endfor %}
+    {% if not no_more_material %}
+    <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_last">Lisää uusi osio</a></p>
+    <hr>
+    {% endif %}
+    {% endif %}
 {% else %}
-
-Pahoittelut, kurssia ei löytynyt!
-
+    <p>Et ole kurssin opettaja!</p>
+{% endif %}
 {% endif %}
 
+<!-- Opiskelijan näkymä -->
+{% if session.usertype == 2 %}
+
+    <h1>{{course[1]}}</h1>
+    <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
+    <p>Omat pisteet: {{ course_statistics[1] }}</p>
+    <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
+    <p>Kurssin status: {{ course_statistics[4] }}</p>
+
+    <hr>
+
+    <p style="white-space: pre-line">{{ course[4] }}</p>
+
+    <hr>
+
+    {% for material in coursematerial %}
+        <h3 style="white-space: pre-line">{{ material[1] }}</h3>
+        <p style="white-space: pre-line">{{ material[2] }}</p>
+        <p>
+        <hr>
+    {% endfor %}
+{% endif %}
+
+{% else %}
+    <p>Pahoittelut, kurssia ei löytynyt!</p>
+{% endif %}
 {% endblock %}
