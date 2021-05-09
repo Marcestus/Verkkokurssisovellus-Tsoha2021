@@ -173,8 +173,15 @@
                                 <label>{{ choice[2] }}</label><br>
                             {% endif %}
                         {% else %}
+                            {% if not student_signedup %}
+
+                            <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" disabled>
+                            <label>{{ choice[2] }}</label><br>
+
+                            {% else %}
                             <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" required>
                             <label>{{ choice[2] }}</label><br>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                     
@@ -185,6 +192,7 @@
                             <label>{{ quiz[0][4] }}</label><br>
                         {% endif %}    
                     {% endif %}
+
                     <input type="hidden" name="quizzes" value="{{ quiz[0][0] }}">
                     <hr>
                 {% endfor %}
@@ -192,7 +200,11 @@
                 {% if all_quizzes_answered %}
                     <label>Olet jo vastannut</label>
                 {% else %}
+                {% if not student_signedup %}
+                    <label>Et voi vastata tehtäviin, ennen kun olet ilmoittautunut!</label>
+                {% else %}
                     <input id="button" type="submit" value="Lähetä vastaukset">
+                {% endif %}
                 {% endif %}
 
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -200,6 +212,7 @@
                 <input type="hidden" name="exercise_type" value="1">
             </form>
             <hr>
+
         {% endif %}
 
         <h3>Tekstikenttätehtävät</h3>
@@ -239,8 +252,20 @@
                             <label>{{ text_question[5] }}</label>
                         {% endif %}
                     {% else %}
+
+
+                    {% if not student_signedup %}
+                
+
+                    <label>Vastaus:</label>
+                    <input type="text" name="answer_{{ text_question[0] }}" maxlength="50" disabled><br>
+
+
+                    {% else %}
+                
                         <label>Vastaus:</label>
                         <input type="text" name="answer_{{ text_question[0] }}" maxlength="50" required><br>
+                    {% endif %}
                     {% endif %}
                         
                     <hr>
@@ -249,7 +274,21 @@
                 {% if all_text_exercises_answered %}
                     <label>Olet jo vastannut</label>
                 {% else %}
-                    <input id="button" type="submit" value="Lähetä vastaukset">
+
+
+
+                {% if not student_signedup %}
+
+
+                <label>Et voi vastata tehtäviin, ennen kun olet ilmoittautunut!</label>
+
+
+
+
+                {% else %}
+                <input id="button" type="submit" value="Lähetä vastaukset">
+                {% endif %}
+                    
                 {% endif %}
                 
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">

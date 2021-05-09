@@ -122,3 +122,8 @@ def signup_to_course(course_id):
     except:
         return False
     return True
+
+def check_for_signup(user_id, course_id):
+    sql = "SELECT 1 FROM Participants WHERE student_id=:user_id AND course_id=:course_id"
+    result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
+    return result.fetchone() != None

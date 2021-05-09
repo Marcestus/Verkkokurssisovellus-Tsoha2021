@@ -95,6 +95,7 @@ def exercise_page(id):
         no_text_exercises = (len(text_exercises) == 0)
         all_exercise_slots_used = (exercises.get_amount_of_exercises(id) == 20)
         course_published = course[5]
+        student_signedup = courses.check_for_signup(user_id, id)
 
         all_quizzes_answered = statistics.all_exercises_answered(user_id, id, 1)
         all_text_exercises_answered = statistics.all_exercises_answered(user_id, id, 2)
@@ -114,7 +115,7 @@ def exercise_page(id):
         return render_template("exercises.html",
             course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises,
             no_quizzes=no_quizzes, no_text_exercises=no_text_exercises, all_exercise_slots_used=all_exercise_slots_used,
-            course_published=course_published,
+            course_published=course_published, student_signedup=student_signedup,
             all_quizzes_answered=all_quizzes_answered, all_text_exercises_answered=all_text_exercises_answered,
             course_statistics=course_statistics, correct_quiz_answers=correct_quiz_answers,
             all_quiz_answers=all_quiz_answers, all_text_exercise_answers=all_text_exercise_answers)
