@@ -144,6 +144,7 @@ def update_passgrade():
     user_id = users.get_user_id()
     if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_id = request.form["course_id"]
     course_owner = courses.check_for_ownership(user_id, course_id)
     if not course_owner:
         return render_template("error.html", message="Et ole kurssin opettaja!")
@@ -151,7 +152,6 @@ def update_passgrade():
         abort(403)
     
     new_passgrade = request.form["passgrade"]
-    course_id = request.form["course_id"]
     if courses.update_passgrade(course_id, new_passgrade):
         return redirect(f"course/{course_id}")
     else:
@@ -254,13 +254,13 @@ def answer_to_exercises():
     user_id = users.get_user_id()
     if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
+    course_id = request.form["course_id"]
     user_signedup = courses.check_for_signup(user_id, course_id)
     if not user_signedup:
         return render_template("error.html", message="Ilmoittaudu ensin kurssille!")
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     
-    course_id = request.form["course_id"]
     exercise_type = int(request.form["exercise_type"])
 
     all_answers = []

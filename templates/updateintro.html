@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}Kurssin johdannon päivitys{% endblock %}
+
+{% block navbar %}
+<li><a href="/course/{{ course[0] }}">Kurssimateriaali</a></li>
+{% endblock %}
+
 {% block content %}
 
     <h1>{{ course[1] }}</h1>

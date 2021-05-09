@@ -13,9 +13,10 @@
     {% if course_owner %}
 
         <h1>{{course[1]}}</h1>
-        <p>Geneeristä ohjeistusta tehtäviin?</p>
-        <p>Esim. tekstikenttävastauksen pitää olla tismalleen oikein</p>
+        <p>Tällä sivulla pääset lisäämään tehtäviä kurssillesi. Valittavanasi on kaksi tehtävävaihtoehtoa.
+            Huomioithan, että tekstikenttätehtävän vastauksen pitää olla tismalleen oikein, jotta ohjelma osaa lukea sen oikeaksi.</p>
 
+            <h4>Työn iloa!</h4>
         <hr>
 
         <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
@@ -137,7 +138,10 @@
     {% if session.usertype == 2 %}
 
         <h1>{{course[1]}}</h1>
-        <p>Geneeristä ohjeistusta tehtäviin?</p>
+        <p>Tällä sivulla pääset vastaamaan kurssin tehtäviin. Huomioithan, että voit vastata kuhunkin tehtäväosioon vain kerran.
+            Saat palautteen vastauksistasi heti palautettuasi ne.</p>
+
+        <h4>Opiskelun iloa!</h4>
 
         <hr>
 

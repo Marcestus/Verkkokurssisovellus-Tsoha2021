@@ -6,9 +6,14 @@
 
     <h4>Tervetuloa {{ session.username }}!</h4>
 
-    <hr>
-
     {% if session.usertype == 1 %}
+
+        <p>Tällä sivulla voit hallita omia kurssisivujasi. Muistathan, että julkaistuasi kurssin, et voi enää muokata sen tehtäviä tai läpipääsyrajaa.
+            Materiaalia voi muokata julkaisusta huolimatta.</p>
+
+        <h4>Työn iloa!</h4>
+
+        <hr>
 
         <h3>Käynnissä olevat kurssit</h3>
         <hr>
@@ -44,6 +49,11 @@
 
     {% if session.usertype == 2 %}
 
+        <p>Tällä sivulla näet meneillään olevia kursseja ja pääset ilmoittautumaan niille. Muistathan, että että voi vastata kurssin tehtäviin vasta,
+            kun olet ilmoittautunut sille. Materiaalia voi tutkiskella myös ilmoittautumatta.</p>
+
+        <h4>Opiskelun iloa!</h4>
+        
         <h3>Keskeneräiset kurssit</h3>
         <hr>
         {% for course in uncompleted_courses %}

@@ -14,13 +14,20 @@
     {% if course_owner %}
 
         <h1>{{course[1]}}</h1>
+
+        <p>Tällä sivulla pääset muokkaamaan kurssimateriaalia ja sekä kurssin läpipääsyrajaa. Huomioithan, että materiaaliosioiden maksimimäärä on 10 kappaletta.
+            Maksimipisteet määräytyvät suoraan tehtäväpisteistä.</p>
+
+        <h4>Työn iloa!</h4>
+
+        <hr>
         
         <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
         <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
 
         {% if not course_published %}
             <form action="/update_passgrade" method="post">
-                <label for="passgrade">Muuta rajaa (1-100 %):</label>
+                <label for="passgrade">Muuta läpipääsyrajaa (1-100 %):</label>
                 <input type="number" name="passgrade" min="1" max="100">
                 <input id="button" type="submit" value="Päivitä raja">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
