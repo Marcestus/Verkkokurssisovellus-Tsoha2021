@@ -6,18 +6,24 @@
 </head>
 
 <body>
-    <div class="title">
+    <div class="header">
         <h1>Verkkokurssisovellus</h1>
-        <a href="/">Etusivu</a>
-        
-        {% if session.user_id %}
-            <a href="/logout">Kirjaudu ulos</a>
-            <p>Olet kirjautunut sisään käyttäjänä {{ session.username }}</p>
-        {% endif %}
-        
     </div>
+    <nav>
+        <ul>
+            {% if session.user_id %}
+            <li><a href="/">Kaikki kurssit</a></li>
+            {% block navbar %}{% endblock %}
+            <li><a href="/logout">Kirjaudu ulos ({{ session.username }})</a></li>
+            {% else %}
+            <li><a href="/">Etusivu</a></li>
+            <li><a href="/login">Kirjaudu</a></li>
+            <li><a href="/register">Rekisteröidy</a></li>
+            {% endif %}
+            </div>
+        </ul>
+    </nav>
     <div class="content">
-        <hr>
         {% block content %}{% endblock %}
     </div>
 </body>

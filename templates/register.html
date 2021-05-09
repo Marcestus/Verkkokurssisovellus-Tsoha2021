@@ -3,14 +3,18 @@
 {% block content %}
 
 <form action="/register" method="post">
-    <p>Luo uusi tunnus</p>
-    <p>Tunnus: <input type="text" name="username" minlength="3" maxlength="20" required>  (3-20 merkkiä)</p>
-    <p>Salasana: <input type="password" name="password" minlength="8" maxlength="20" required> (8-20 merkkiä)</p>
-    <p>Toista salasana: <input type="password" name="password_again" required> </p>
-    Valitse käyttäjätyyppi:
-    <input type="radio" name="usertype" value="1" required> Opettaja
-    <input type="radio" name="usertype" value="2" required> Opiskelija
-    <p><input type="submit" value="Luo tunnus"></p>
+    <label for="username">Tunnus (3-20 merkkiä):</label>
+    <input type="text" name="username" minlength="3" maxlength="20" required><br>
+    <label for="password">Salasana (8-20 merkkiä):</label>
+    <input type="password" name="password" minlength="8" maxlength="20" required><br>
+    <label for="password_again">Toista salasana:</label>
+    <input type="password" name="password_again" required><br>
+    <label for="usertype">Valitse käyttäjätyyppi:</label><br>
+    <label for="option">Opettaja</label>
+    <input type="radio" id="option" name="usertype" value="1" required><br>
+    <label for="option">Opiskelija</label>
+    <input type="radio" id="option" name="usertype" value="2" required><br>
+    <input id="button" type="submit" value="Luo tunnus">
 </form>
 
 {% endblock %}

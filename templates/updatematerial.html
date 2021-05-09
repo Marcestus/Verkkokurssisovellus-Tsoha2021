@@ -6,9 +6,9 @@
 
     <h1>{{ course[1] }}</h1>
     <form action="/course/{{ course[0] }}" method="post">
-        <p><textarea name="title" rows="1" cols="100" maxlength="100">{{ material[1] }}</textarea> <br>(max 100 merkkiä)</p>
-        <p><textarea name="content" rows="25" cols="100" maxlength="10000">{{ material[2] }}</textarea> <br>(max 10 000 merkkiä)</p>
-        <p><input type="submit" value="Päivitä materiaali"></p>
+        <textarea name="title" rows="1" cols="75" maxlength="100">{{ material[1] }}</textarea><br>
+        <textarea name="content" rows="25" cols="75" maxlength="10000">{{ material[2] }}</textarea><br>
+        <input id="button" type="submit" value="Päivitä materiaali"><br>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <input type="hidden" name="material_id" value="{{ material[0] }}">
         <input type="hidden" name="update_type" value="material_update">

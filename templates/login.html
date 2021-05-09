@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Rekisteröinti{% endblock %}
+{% block content %}
+
+<form action="/login" method="post">
+    <label for="username">Tunnus:</label>
+    <input type="text" name="username" required><br>
+    <label for="password">Salasana:</label>
+    <input type="password" name="password" required><br>
+    <input id="button" type="submit" value="Kirjaudu">
+</form>
+
+{% endblock %}

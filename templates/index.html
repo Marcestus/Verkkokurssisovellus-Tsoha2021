@@ -3,7 +3,11 @@
 {% block content %}
 
 {% if session.user_id %}
-    
+
+    <h4>Tervetuloa {{ session.username }}!</h4>
+
+    <hr>
+
     {% if session.usertype == 1 %}
 
         <h3>Käynnissä olevat kurssit</h3>
@@ -29,10 +33,10 @@
         {% endfor %}
 
         <form action="/newcourse" method="post">
-            <p>Luo uusi kurssi</p>
-            <p>Kurssin nimi: <input type="text" name="coursename" minlength="3" maxlength="50" required> (3-50 merkkiä)</p>
-            <input type="submit" value="Luo kurssi"> <br>
-            <p>
+            <label>Luo uusi kurssi</label><br>
+            <label for="coursename">Kurssin nimi (3-50 merkkiä):</label><br>
+            <input type="text" name="coursename" minlength="3" maxlength="50" required>
+            <input id="button" type="submit" value="Luo kurssi">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
 
@@ -65,18 +69,18 @@
 
 {% else %}
 
-<form action="/login" method="post">
-    <p>Kirjaudu sisään</p>
-    Tunnus: <input type="text" name="username" required>
-    <p>
-    Salasana: <input type="password" name="password" required>
-    <p>
-    <input type="submit" value="Kirjaudu">
-</form>
 
-<hr>
+<h1>Tervetuloa verkkokurssisovellukseen!</h1>
 
-Jos sinulla ei ole tunnuksia, voit luoda ne <a href="/register">tästä</a>
+<p>Sovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja opiskelijat suorittaa.
+    Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden määrän ja hyväksyttyjen suoritusten määrän.
+    Vastaavasti opiskelijat näkevät kurssisivuilla tilastoja omasta etenemisestään.</p>
+<p>Huomioithan, että opiskelijana voit suorittaa tehtäviä vain ilmoittautumalla ensin kurssille.</p>
+
+<p>Aloita kirjautumalla sisään tai luomalla tunnus.</p>
+
+<h4>Opiskelun iloa!</h4>
 
 {% endif %}
+
 {% endblock %}
