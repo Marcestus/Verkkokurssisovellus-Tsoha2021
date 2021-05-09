@@ -1,9 +1,13 @@
 # Verkkokurssisovellus-Tsoha2021
 Helsingin Yliopisto / Aineopintojen harjoitustyö: Tietokantasovellus -kurssin harjoitustyö / kevät2021
 
-# Sovelluksen nykyinen tilanne ja testaus Herokussa
+# Sovelluksen kuvaus ja testaus Herokussa
 
-Sovellus on testattavissa Herokussa https://verkkokurssisovellus.herokuapp.com/
+Sovellus on testattavissa [Herokussa](https://tsoha-verkkokurssisovellus.herokuapp.com/)
+
+Sovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja opiskelijat suorittaa. Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden määrän ja hyväksyttyjen suoritusten määrän. Vastaavasti opiskelijat näkevät kurssisivuilla tilastoja omasta etenemisestään.
+
+### Tilanne 3. välipalautuksessa (25.4.)
 
 Sovelluksessa on muutamia valmiita tunnuksia (niitä voi toki luoda myös itse). Tunnukset ovat mielikuvituksellisesti 'opiskelija', 'opiskelija2', 'opettaja', 'opettaja2'. Kaikilla on sama salasana 'SukkaPorkkana57'
 
@@ -18,11 +22,7 @@ Huomioita sovelluksesta:
 
 Ikävä kyllä sovelluksen toteuttaminen ei ole edennyt tavoiteaikataulun mukaisesti. Olen vielä opettelemassa kurssin materiaalia, eli en ole saanut vielä toimivaa pohjaa työlleni. Näin ollen Herokustakaan ei löydy mitään testattavaa.
 
-# Aiheen kuvaus
-
-Verkkokurssisovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja oppilaat suorittaa. Opettajat näkevät tilastotietoja luomistaan kursseista, kuten ilmoittautuneiden oppilaiden määrän per kurssi sekä kurssia suorittavan oppilaan nimen, suoritetut tehtävät ja tiedon siitä, onko oppilas päässyt kurssin läpi. Myös oppilaat näkevät vastaavia tietoja suoriutumisestaan kursseilla, joille he ovat ilmoittautuneet. Sovellukseen kirjautuminen tapahtuu molemmille käyttäjärooleille (opettaja ja oppilas) samalla tavalla. Muuten sovelluksen näkymät ja toiminnot on jaettu käyttäjärooleittain.
-
-# Sovelluksen rakenne ja ominaisuudet
+# Sovelluksen rakenne ja ominaisuudet (Alkuperäinen määrittelydokumentti)
 
 Sovelluksella on yhteensä viisi päänäkymää: kirjautumissivu, etusivu, yksittäiset kurssisivut, tilastojen koontisivu ja yksittäisten kurssien yksityiskohtaisemmat tilastosivut. Kirjautumissivu on siis sama kaikille käyttäjärooleille, muut sivut on räätälöity käyttäjäroolin mukaan.
 
