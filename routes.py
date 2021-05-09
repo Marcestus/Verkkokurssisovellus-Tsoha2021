@@ -40,11 +40,12 @@ def course_page(id):
     else:
         user_id = users.get_user_id()
         course = courses.get_course(id)
+        course_published = course[5]
         coursematerial = coursematerials.get_all_coursematerials(id)
         course_statistics = statistics.get_course_status(user_id, id)
         no_material = (len(coursematerial) == 0)
         no_more_material = (coursematerials.get_amount_of_material_slots(id) == 10)
-        return render_template("course.html", course=course, coursematerial=coursematerial, course_statistics=course_statistics,
+        return render_template("course.html", course=course, course_published=course_published, coursematerial=coursematerial, course_statistics=course_statistics,
             no_material=no_material, no_more_material=no_more_material)
 
 @app.route("/course/<int:id>/exercises", methods=["get", "post"])
@@ -83,6 +84,7 @@ def exercise_page(id):
         no_quizzes = (len(quizzes_and_choises) == 0)
         no_text_exercises = (len(text_exercises) == 0)
         all_exercise_slots_used = (exercises.get_amount_of_exercises(id) == 20)
+        course_published = course[5]
 
         all_quizzes_answered = statistics.all_exercises_answered(user_id, id, 1)
         all_text_exercises_answered = statistics.all_exercises_answered(user_id, id, 2)
@@ -102,6 +104,7 @@ def exercise_page(id):
         return render_template("exercises.html",
             course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises,
             no_quizzes=no_quizzes, no_text_exercises=no_text_exercises, all_exercise_slots_used=all_exercise_slots_used,
+            course_published=course_published,
             all_quizzes_answered=all_quizzes_answered, all_text_exercises_answered=all_text_exercises_answered,
             course_statistics=course_statistics, correct_quiz_answers=correct_quiz_answers,
             all_quiz_answers=all_quiz_answers, all_text_exercise_answers=all_text_exercise_answers)
@@ -159,7 +162,7 @@ def modify_coursematerial_order(course_id, material_id, modify_type):
 @app.route("/hide/<int:course_id>/<int:exercise_id>")
 def hide_exercise(course_id, exercise_id):
     exercises.hide_exercise(exercise_id)
-    return redirect("f/course/{course_id}/exercises")
+    return redirect(f"/course/{course_id}/exercises")
 
 @app.route("/publish/<int:course_id>")
 def publish_course(course_id):
