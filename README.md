@@ -9,8 +9,6 @@ Sovellus toimii alustana verkkokursseille, joita opettajat voivat hallinnoida ja
 
 ### Tilanne 3. välipalautuksessa (25.4.)
 
-Sovelluksessa on muutamia valmiita tunnuksia (niitä voi toki luoda myös itse). Tunnukset ovat mielikuvituksellisesti 'opiskelija', 'opiskelija2', 'opettaja', 'opettaja2'. Kaikilla on sama salasana 'SukkaPorkkana57'
-
 Huomioita sovelluksesta:
 -  Tällä hetkellä sekä opettajat että oppilaat voivat rekisteröityä ja kirjautua palveluun. Opettajat voivat luoda uusia kursseja ja lisätä niille tekstisisältöä. Oppilaat voivat tarkastella kursseja ja ilmoittautua niille
 -  Tavoiteaikataulusta poiketen kurssin kaikki ydintoiminto ei siis ole vielä valmis ja kuten näkyy, ulkoasukin on vielä aloittamatta
