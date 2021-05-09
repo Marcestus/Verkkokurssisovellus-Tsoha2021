@@ -59,3 +59,13 @@ def get_course_status(user_id, course_id):
     else:
         course_statistics.append("Kesken")
     return course_statistics
+
+def get_students(course_id):
+    sql = "SELECT COUNT(*) FROM Participants WHERE course_id=:course_id"
+    result = db.session.execute(sql, {"course_id":course_id})
+    return result.fetchone()[0]
+
+def get_passed_students(course_id):
+    sql = "SELECT COUNT(*) FROM Participants WHERE course_id=:course_id AND course_passed=TRUE"
+    result = db.session.execute(sql, {"course_id":course_id})
+    return result.fetchone()[0]

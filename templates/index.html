@@ -6,21 +6,27 @@
     
     {% if session.usertype == 1 %}
 
-        <p>Käynnissä olevat kurssit</p>
+        <h3>Käynnissä olevat kurssit</h3>
+        <hr>
         {% for course in open_courses_teacher %}
-            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
-            <a href="/hide/{{ course[0] }}">Poista</a> <br>
+            <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <a href="/hide/{{ course[0] }}">Poista</a></p>
+            {% for stats in course_statistics %}
+                {% if course[0] == stats[0] %}
+                    <p>Ilmoittautuneita {{ stats[1][0] }} kpl</p>
+                    <p>Hyväksyttyjä suorituksia {{ stats[1][1] }} kpl eli n. {{ stats[1][2] }}%</p>
+                {% endif %}
+            {% endfor %}
+            <hr>
         {% endfor %}
 
+        <h3>Julkaisemattomat kurssit</h3>
         <hr>
-
-        <p>Julkaisemattomat kurssit</p>
         {% for course in unpublished_courses %}
-            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
-            <a href="/publish/{{ course[0] }}">Julkaise</a> <br>
+            <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <a href="/publish/{{ course[0] }}">Julkaise</a></p>
+            <hr>
         {% endfor %}
-
-        <hr>
 
         <form action="/newcourse" method="post">
             <p>Luo uusi kurssi</p>
@@ -34,27 +40,26 @@
 
     {% if session.usertype == 2 %}
 
-        <p>Keskeneräiset kurssit</p>
+        <h3>Keskeneräiset kurssit</h3>
+        <hr>
         {% for course in uncompleted_courses %}
-            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a></p>
+            <hr>
         {% endfor %}
         
+        <h3>Avoimet kurssit</h3>
         <hr>
-
-        <p>Avoimet kurssit</p>
         {% for course in open_courses %}
-            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
-            <a href="/signup/{{ course[0] }}">Ilmoittaudu kurssille</a> <br>
+            <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <a href="/signup/{{ course[0] }}">Ilmoittaudu kurssille</a></p>
         {% endfor %}
 
+        <h3>Valmiit kurssit</h3>
         <hr>
-
-        <p>Valmiit kurssit</p>
         {% for course in completed_courses %}
-            <a href="/course/{{ course[0] }}">{{ course[1] }}</a> <br>
+            <p><a href="/course/{{ course[0] }}">{{ course[1] }}</a></p>
+            <hr>
         {% endfor %}
-
-        <hr>
 
     {% endif %}
 

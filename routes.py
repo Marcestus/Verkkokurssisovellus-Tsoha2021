@@ -11,7 +11,17 @@ def index():
     if users.get_usertype() == 1:
         open_courses_teacher = courses.get_open_courses_teacher()
         unpublished_courses = courses.get_unpublished_courses()
-        return render_template("index.html", open_courses_teacher=open_courses_teacher, unpublished_courses=unpublished_courses)
+        course_statistics = []
+        for course in open_courses_teacher:
+            student_amount = statistics.get_students(course[0])
+            passed_students = statistics.get_passed_students(course[0])
+            if student_amount == 0:
+                pass_percent = 0
+            else:
+                pass_percent = int((passed_students / student_amount) * 100)
+            course_stats = (course[0], [student_amount, passed_students, pass_percent])
+            course_statistics.append(course_stats)
+        return render_template("index.html", open_courses_teacher=open_courses_teacher, unpublished_courses=unpublished_courses, course_statistics=course_statistics)
     elif users.get_usertype() == 2:
         completed_courses = courses.get_completed_courses()
         uncompleted_courses = courses.get_uncompleted_courses()
@@ -161,18 +171,22 @@ def modify_coursematerial_order(course_id, material_id, modify_type):
 
 @app.route("/hide/<int:course_id>/<int:exercise_id>")
 def hide_exercise(course_id, exercise_id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
     exercises.hide_exercise(exercise_id)
     return redirect(f"/course/{course_id}/exercises")
 
 @app.route("/publish/<int:course_id>")
 def publish_course(course_id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
     courses.publish_course(course_id)
     return redirect("/")
 
 @app.route("/hide/<int:course_id>")
 def hide_course(course_id):
+    # Suojaus: vain (kirjautunut) opettaja saa päästä oman kurssinsa muokkaussivulle
     courses.hide_course(course_id)
     return redirect("/")
+
 
 # Opiskelijan toimintoja
 
@@ -186,6 +200,7 @@ def signup(id):
 
 @app.route("/answer_to_exercises", methods=["post"])
 def answer_to_exercises():
+    # Suojaus: vain kyseiselle kurssille ilmoittautunut (kirjautunut) opiskelija
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     
@@ -208,12 +223,12 @@ def answer_to_exercises():
     else:
         return render_template("error.html", message="Vastausten tallentaminen ei onnistunut!")
 
+
 # Kirjautumiseen liittyvät
 
 @app.route("/login", methods=["post"])
 def login():
     # Suojaus: tässä taitaa olla kaikki ihan kunnossa
-    # Näissä ei ole CSRF-tsekkausta, ok?
     username = request.form["username"]
     password = request.form["password"]
     if users.login(username, password):
@@ -230,7 +245,6 @@ def logout():
 @app.route("/register", methods=["get", "post"])
 def register():
     # Suojaus: ei tarvetta, kuka vaan voi päästä tänne
-    # Näissä ei ole CSRF-tsekkausta, ok?
     if request.method == "GET":
         return render_template("register.html")
     if request.method == "POST":
