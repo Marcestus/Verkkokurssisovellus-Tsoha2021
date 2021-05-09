@@ -150,7 +150,7 @@
         {% for quiz in quizzes_and_choises %}
             <label>Pisteet: {{ quiz[0][1] }}</label><br>
             <label>Kysymys:</label><br>
-            <p style="white-space: pre-line">{{ quiz[0][2] }}</p><br>
+            <p style="white-space: pre-line">{{ quiz[0][2] }}</p>
             {% for choice in quiz[1] %}
                 {% if all_quizzes_answered %}
                 {% if (quiz[0][0],choice[0]) in all_quiz_answers and choice[3] == True %}
@@ -211,7 +211,7 @@
         {% for text_question in text_exercises %}
             <label>Pisteet: {{ text_question[1] }}</label>
             <label>Kysymys:</label><br>
-            <p style="white-space: pre-line">{{ text_question[2] }}</p><br>
+            <p style="white-space: pre-line">{{ text_question[2] }}</p>
             {% if all_text_exercises_answered %}
             {% for answers in all_text_exercise_answers %}
                 {% if answers[0] == text_question[0] and answers[1] == text_question[3] %}
