@@ -1,5 +1,5 @@
 from db import db
-import courses
+import courses, statistics
 
 
 #Täällä vois olla osa sellaisia, että voisi siirtää omaan statistics.py -tiedostoon?
@@ -22,7 +22,7 @@ def save_answers(user_id, course_id, exercise_type, answers):
                 db.session.execute(sql, {"user_id":user_id, "quiz_id":quiz_id, "text_answer":text_answer, "answer_right":answer_right})
         if not mark_exercises_as_done(user_id, course_id, exercise_type):
             return False
-        if not course_already_passed(user_id, course_id) and points_enough_to_pass(user_id, course_id):
+        if not statistics.course_already_passed(user_id, course_id) and statistics.points_enough_to_pass(user_id, course_id):
             mark_course_as_passed(user_id, course_id)
         db.session.commit()
     except:
@@ -47,35 +47,6 @@ def mark_exercises_as_done(user_id, course_id, exercise_type):
         return False
     return True
 
-def course_already_passed(user_id, course_id):
-    sql = "SELECT 1 FROM Participants WHERE student_id=:user_id AND course_id=:course_id AND course_passed=TRUE"
-    result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
-    return result.fetchone() != None
-
-def get_max_points(course_id):
-    sql = "SELECT SUM(points) FROM Exercises WHERE course_id=:course_id"
-    result = db.session.execute(sql, {"course_id":course_id})
-    return result.fetchone()[0]
-
-def get_user_points(user_id, course_id):
-    sql = "SELECT SUM(points) FROM Exercises WHERE course_id=:course_id AND id IN (SELECT exercise_id FROM Answers WHERE student_id=:user_id AND answer_right=TRUE)"
-    result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id})
-    return result.fetchone()[0]
-
-def get_passgrade(course_id):
-    sql = "SELECT passgrade FROM Courses WHERE id=:course_id"
-    result = db.session.execute(sql, {"course_id":course_id})
-    return result.fetchone()[0]
-
-def get_passgrade_in_points(user_id, course_id):
-    return int(get_max_points(course_id)*(get_passgrade(course_id)/100)) + 1
-
-def points_enough_to_pass(user_id, course_id):
-    user_points = get_user_points(user_id, course_id)
-    max_points = get_max_points(course_id)
-    passgrade = get_passgrade(course_id)
-    return user_points / max_points >= passgrade / 100
-
 def mark_course_as_passed(user_id, course_id):
     try:
         sql = "UPDATE Participants SET course_passed=TRUE WHERE student_id=:user_id AND course_id=:course_id"
@@ -83,11 +54,6 @@ def mark_course_as_passed(user_id, course_id):
     except:
         return False
     return True
-
-def all_exercises_answered(user_id, course_id, exercise_type):
-    sql = "SELECT 1 FROM Done_exercises WHERE student_id=:user_id AND course_id=:course_id AND exercise_type=:exercise_type"
-    result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id, "exercise_type":exercise_type})
-    return result.fetchone() != None
 
 def get_correct_answers(user_id, course_id, exercise_type):
     if exercise_type == 1:
@@ -106,3 +72,15 @@ def get_all_answers(user_id, course_id, exercise_type):
     result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id, "exercise_type":exercise_type})
     all_answers = [(item[0],item[1]) for item in result.fetchall()]
     return all_answers
+
+
+
+
+
+#Siirrettäviä
+
+
+
+
+
+

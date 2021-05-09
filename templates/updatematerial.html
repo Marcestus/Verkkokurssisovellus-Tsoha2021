@@ -6,8 +6,8 @@
 
     <h1>{{ course[1] }}</h1>
     <form action="/course/{{ course[0] }}" method="post">
-        <textarea name="title" rows="1" cols="100">{{ material[1] }}</textarea> <br>
-        <textarea name="content" rows="25" cols="100">{{ material[2] }}</textarea>
+        <p><textarea name="title" rows="1" cols="100" maxlength="100">{{ material[1] }}</textarea> <br>(max 100 merkkiä)</p>
+        <p><textarea name="content" rows="25" cols="100" maxlength="10000">{{ material[2] }}</textarea> <br>(max 10 000 merkkiä)</p>
         <p><input type="submit" value="Päivitä materiaali"></p>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <input type="hidden" name="material_id" value="{{ material[0] }}">

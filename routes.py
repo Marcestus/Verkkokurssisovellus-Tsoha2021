@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect, session
-import users, courses, coursematerials, exercises, answers
+import users, courses, coursematerials, exercises, answers, statistics
 
 
 # Sivuja
@@ -27,31 +27,24 @@ def course_page(id):
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if request.form["update_type"] == "intro_update":
+        update_type = request.form["update_type"]
+        if update_type == "intro_update":
             if not courses.update_intro(id, request.form["content"]):
                 fail = True
-        if request.form["update_type"] == "material_update":
+        if update_type == "material_update":
             if not coursematerials.update_material(request.form["material_id"], request.form["title"], request.form["content"]):
                 fail = True
     if fail:
         return render_template("error.html", message="Kurssimateriaalin päivittäminen ei onnistunut!")
     else:
+        user_id = users.get_user_id()
         course = courses.get_course(id)
         coursematerial = coursematerials.get_all_coursematerials(id)
-        if len(coursematerial) == 0:
-            no_material = True
-        else:
-            no_material = False
-        if coursematerials.get_amount_of_material_slots(id) == 10:
-            slot_add_ok = False
-        else:
-            slot_add_ok = True
-        return render_template("course.html", course=course, coursematerial=coursematerial, no_material=no_material, slot_add_ok=slot_add_ok)
-
-
-@app.route("/course/<int:course_id>/exercises/results/<int:user_id>")
-def results_page(course_id, user_id):
-    return render_template("results.html", course_id=course_id, user_id=user_id)
+        course_statistics = statistics.get_course_status(user_id, id)
+        no_material = (len(coursematerial) == 0)
+        no_more_material = (coursematerials.get_amount_of_material_slots(id) == 10)
+        return render_template("course.html", course=course, coursematerial=coursematerial, course_statistics=course_statistics,
+            no_material=no_material, no_more_material=no_more_material)
 
 @app.route("/course/<int:id>/exercises", methods=["get", "post"])
 def exercise_page(id):
@@ -60,7 +53,6 @@ def exercise_page(id):
     # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
     fail = False
     if request.method == "POST":
-        
         # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
@@ -78,15 +70,9 @@ def exercise_page(id):
     if fail:
         return render_template("error.html", message="Tehtävän lisääminen epäonnistui!")
     else:
+        user_id = users.get_user_id()
         
-        #if student_has_answered_quizzes
-        #if student_has_answered_text_exercises
-        #if student_has_passed_the_course
-        #-> answer_feedback, not allowed to answer again, points showing, whether course is passed or not
-
         course = courses.get_course(id)
-        user_id = users.user_id()
-
         quiz_exercises = exercises.get_all_quiz_exercises(id)
         quizzes_and_choises = []
         for quiz in quiz_exercises:
@@ -98,15 +84,10 @@ def exercise_page(id):
         no_text_exercises = (len(text_exercises) == 0)
         all_exercise_slots_used = (exercises.get_amount_of_exercises(id) == 20)
 
-        all_quizzes_answered = answers.all_exercises_answered(user_id, id, 1)
-        all_text_exercises_answered = answers.all_exercises_answered(user_id, id, 2)
+        all_quizzes_answered = statistics.all_exercises_answered(user_id, id, 1)
+        all_text_exercises_answered = statistics.all_exercises_answered(user_id, id, 2)
         
-        all_exercises_answered = all_quizzes_answered and all_text_exercises_answered
-        course_passed = answers.course_already_passed(user_id, id)
-        passgrade = answers.get_passgrade(id)
-        max_points = answers.get_max_points(id)
-        user_points = answers.get_user_points(user_id, id)
-        passgrade_in_points = answers.get_passgrade_in_points(user_id, id)
+        course_statistics = statistics.get_course_status(user_id, id)
 
         correct_quiz_answers = []
         correct_text_exercise_answers = []
@@ -122,11 +103,9 @@ def exercise_page(id):
             course=course, quizzes_and_choises=quizzes_and_choises, text_exercises=text_exercises,
             no_quizzes=no_quizzes, no_text_exercises=no_text_exercises, all_exercise_slots_used=all_exercise_slots_used,
             all_quizzes_answered=all_quizzes_answered, all_text_exercises_answered=all_text_exercises_answered,
-            all_exercises_answered=all_exercises_answered, course_passed=course_passed,
-            passgrade=passgrade, passgrade_in_points=passgrade_in_points,
-            max_points=max_points, user_points=user_points,
-            correct_quiz_answers=correct_quiz_answers, all_quiz_answers=all_quiz_answers,
-            all_text_exercise_answers=all_text_exercise_answers)
+            course_statistics=course_statistics, correct_quiz_answers=correct_quiz_answers,
+            all_quiz_answers=all_quiz_answers, all_text_exercise_answers=all_text_exercise_answers)
+
 
 #Opettajan toimintoja
 
@@ -136,8 +115,6 @@ def newcourse():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     coursename = request.form["coursename"]
-    if len(coursename) < 3 or len(coursename) > 100:
-        return render_template("error.html", message="Kurssin nimen pituuden täytyy olla 3-100 merkkiä")
     if courses.create_new(coursename):
         return redirect("/")
     else:
@@ -195,18 +172,16 @@ def answer_to_exercises():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     
-    user_id = users.user_id()
+    user_id = users.get_user_id()
     course_id = request.form["course_id"]
     exercise_type = int(request.form["exercise_type"])
 
+    all_answers = []
     if exercise_type == 1:
-        all_answers = []
         all_quizzes = request.form.getlist("quizzes")
         for exercise_id in all_quizzes:
             all_answers.append(request.form[f"choice_{exercise_id}"])
-
     if exercise_type == 2:
-        all_answers = []
         all_text_exercises = request.form.getlist("texts")
         for exercise_id in all_text_exercises:
             all_answers.append((exercise_id, request.form[f"answer_{exercise_id}"]))
@@ -224,8 +199,6 @@ def login():
     # Näissä ei ole CSRF-tsekkausta, ok?
     username = request.form["username"]
     password = request.form["password"]
-    if len(username) == 0 or len(password) == 0:
-        return render_template("error.html", message="Tunnus tai salasana ei kelpaa, muistithan syöttää molemmat...")
     if users.login(username, password):
         return redirect("/")
     else:
@@ -250,8 +223,6 @@ def register():
         password_again = request.form["password_again"]
         if password != password_again:
             return render_template("error.html", message="Salasanat eivät täsmää, koita uudestaan!")
-        if len(username) < 3 or len(username) > 20 or len(password) < 8 or len(password) > 20:
-            return render_template("error.html", message="Käyttäjätunnus tai salasana ei kelpaa! Tarkista pituusvaatimukset")
         if users.register(username, password, usertype):
             return redirect("/")
         else:

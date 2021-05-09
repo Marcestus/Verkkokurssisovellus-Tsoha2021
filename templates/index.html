@@ -15,9 +15,8 @@
 
         <form action="/newcourse" method="post">
             <p>Luo uusi kurssi</p>
-            Kurssin nimi: <input type="text" name="coursename" required>
+            <p>Kurssin nimi: <input type="text" name="coursename" minlength="3" maxlength="50" required> (3-50 merkkiä)</p>
             <input type="submit" value="Luo kurssi"> <br>
-            Huom, nimen täytyy olla 3-100 merkkiä pitkä!
             <p>
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
@@ -52,7 +51,6 @@
     Salasana: <input type="password" name="password" required>
     <p>
     <input type="submit" value="Kirjaudu">
-    <!--Eikai tämä tarvitse CSRF-tokenia?-->
 </form>
 
 <hr>

@@ -8,6 +8,15 @@
         <h1>{{course[1]}}</h1>
 
         <p>Geneeristä ohjeistusta tehtäviin?</p>
+        <p>Esim. tekstikenttävastauksen pitää olla tismalleen oikein</p>
+
+
+        <hr>
+
+        <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
+        <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
+
+        <p><a href="/course/{{ course[0] }}">Takaisin kurssisivulle</a></p>
 
         <hr>
 
@@ -49,14 +58,14 @@
         {% if not all_exercise_slots_used %}
             <h3>Lisää monivalintatehtävä</h3>
             <form action="/course/{{ course[0] }}/exercises" method="POST">
-                <p>Pisteet (1-10): <input type="number" name="points" value="1" min="1" max="10" required></p>
-                <p>Kysymys: <input type="text" name="question" required></p>
-                <p>Oikea vastaus: <input type="text" name="right_choice" required></p>
-                <p>Väärä vastaus: <input type="text" name="wrong_choice" required></p>
-                <p>Väärä vastaus (ei pakollinen): <input type="text" name="wrong_choice"></p>
-                <p>Väärä vastaus (ei pakollinen): <input type="text" name="wrong_choice"></p>
-                <p>Oikean vastauksen palauteteksti (ei pakollinen): <input type="text" name="right_feedback"></p>
-                <p>Väärän vastauksen palauteteksti (ei pakollinen): <input type="text" name="false_feedback"></p>
+                <p>Pisteet: <input type="number" name="points" value="1" min="1" max="10" required> (1-10 pistettä)</p>
+                <p>Kysymys: <input type="text" name="question" maxlength="500" required> (max 500 merkkiä)</p>
+                <p>Oikea vastaus: <input type="text" name="right_choice" maxlength="100" required> (max 100 merkkiä)</p>
+                <p>Väärä vastaus: <input type="text" name="wrong_choice" maxlength="100" required> (max 100 merkkiä)</p>
+                <p>Väärä vastaus: <input type="text" name="wrong_choice" maxlength="100"> (ei pakollinen, max 100 merkkiä)</p>
+                <p>Väärä vastaus: <input type="text" name="wrong_choice" maxlength="100"> (ei pakollinen, max 100 merkkiä)</p>
+                <p>Oikean vastauksen palauteteksti: <input type="text" name="right_feedback" maxlength="100"> (ei pakollinen, max 100 merkkiä)</p>
+                <p>Väärän vastauksen palauteteksti: <input type="text" name="false_feedback" maxlength="100"> (ei pakollinen, max 100 merkkiä)</p>
                 <input type="submit" value="Lisää tehtävä">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="hidden" name="exercise_type" value=1>
@@ -95,13 +104,13 @@
 
         {% if not all_exercise_slots_used %}
             <h3>Lisää tekstikenttätehtävä</h3>
-            <p>Huom! Vastauksen pitää olla tismalleen oikein</p>
+            <p></p>
             <form action="/course/{{ course[0] }}/exercises" method="POST">
-                <p>Pisteet (1-10): <input type="number" name="points" value="1" min="1" max="10" required></p>
-                <p>Kysymys: <input type="text" name="question" required></p>
-                <p>Oikea vastaus: <input type="text" name="right_text" required></p>
-                <p>Oikean vastauksen palauteteksti (ei pakollinen): <input type="text" name="right_feedback"></p>
-                <p>Väärän vastauksen palauteteksti (ei pakollinen): <input type="text" name="false_feedback"></p>
+                <p>Pisteet: <input type="number" name="points" value="1" min="1" max="10" required> (1-10 pistettä)</p>
+                <p>Kysymys: <input type="text" name="question" maxlength="500" required> (max 500 merkkiä)</p>
+                <p>Oikea vastaus: <input type="text" name="right_text" maxlength="50" required> (max 50 merkkiä)</p>
+                <p>Oikean vastauksen palauteteksti: <input type="text" name="right_feedback" maxlength="100"> (ei pakollinen, max 100 merkkiä)</p>
+                <p>Väärän vastauksen palauteteksti: <input type="text" name="false_feedback" maxlength="100"> (ei pakollinen, max 100 merkkiä)</p>
                 <input type="submit" value="Lisää tehtävä">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="hidden" name="exercise_type" value=2>
@@ -123,19 +132,10 @@
 
         <hr>
 
-        <p>Kurssin maksimipisteet: {{ max_points }}</p>
-        <p>Omat pisteet: {{ user_points }}</p>
-        <p>Läpipääsyraja: {{ passgrade }} % eli noin {{ passgrade_in_points }} pistettä</p>
-        <p>Kurssin status:
-            {% if course_passed %}
-                Suoritettu hyväksytysti
-            {% elif all_exercises_answered %}
-                Hylätty
-            {% else %}
-                Kesken
-            {% endif %}
-                
-        </p>
+        <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
+        <p>Omat pisteet: {{ course_statistics[1] }}</p>
+        <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
+        <p>Kurssin status: {{ course_statistics[4] }}</p>
 
         <hr>
 
@@ -226,9 +226,9 @@
                     {% if all_text_exercises_answered %}
                         {% for answers in all_text_exercise_answers %}
                             {% if answers[0] == text_question[0] and answers[1] == text_question[3] %}
-                                <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" value="{{ answers[1] }}" disabled> Oikein!<br></p>
+                                <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" value="{{ answers[1] }}" disabled> Oikein!</p>
                             {% elif answers[0] == text_question[0] and answers[1] != text_question[3] %}
-                                <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" value="{{ answers[1] }}" disabled> Väärin!<br></p>
+                                <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" value="{{ answers[1] }}" disabled> Väärin!</p>
                             {% endif %}
                         {% endfor %}
 
@@ -238,7 +238,7 @@
                             <p>{{ text_question[5] }}</p>
                         {% endif %}
                     {% else %}
-                        <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" required><br></p>
+                        <p>Vastaus: <input type="text" name="answer_{{ text_question[0] }}" maxlength="50" required> (max 50 merkkiä)</p>
                     {% endif %}
                         
                     <hr>

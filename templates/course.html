@@ -6,15 +6,26 @@
     {% if session.usertype == 1 %}
 
         <h1>{{course[1]}}</h1>
-        <p>Läpipääsyraja: {{course[3]}} % tehtäväpisteistä</p>
         <p style="white-space: pre-line">{{ course[4] }}</p>
         <a href="/update_intro/{{ course[0] }}">Muokkaa</a>
 
         <hr>
 
+        <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
+        <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
+
+        <form action="/update_passgrade" method="post">
+            Muuta rajaa: <input type="number" name="passgrade" min="1" max="100"> (1-100%)
+            <input type="submit" value="Päivitä raja"> <br>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course[0] }}">
+        </form>
+
         <p><a href="/course/{{ course[0] }}/exercises">Kurssin tehtävät</a></p>
 
-        {% if not slot_add_ok %}
+        <hr>
+
+        {% if no_more_material %}
         
             <p>Osioiden maksimimäärä saavutettu! Poista osio, jos haluat lisätä uuden</p>
             
@@ -29,12 +40,11 @@
         {% else %}
 
             {% for material in coursematerial %}
-                {% if slot_add_ok %}
 
+                {% if not no_more_material %}
                     <p><a href="/modify_coursematerial_order/{{ course[0] }}/{{ material[0] }}/add_middle">Lisää uusi osio</a></p>
-                    
+                
                     <hr>
-
                 {% endif %}
 
                 <p style="white-space: pre-line">{{ material[1] }}</p>
@@ -46,12 +56,10 @@
                 <hr>
             {% endfor %}
             
-            {% if slot_add_ok %}
-
+            {% if not no_more_material %}
                 <p><a href="/modify_coursematerial_order/{{ course[0] }}/0/add_last">Lisää uusi osio</a></p>
 
                 <hr>
-
             {% endif %}
 
         {% endif %}
@@ -61,10 +69,14 @@
     {% if session.usertype == 2 %}
 
         <h1>{{course[1]}}</h1>
-        <p>Läpipääsyraja: {{course[3]}} % tehtäväpisteistä</p>
         <p style="white-space: pre-line">{{ course[4] }}</p>
 
         <hr>
+
+        <p>Kurssin maksimipisteet: {{ course_statistics[0] }}</p>
+        <p>Omat pisteet: {{ course_statistics[1] }}</p>
+        <p>Läpipääsyraja: {{ course_statistics[2] }} % eli noin {{ course_statistics[3] }} pistettä</p>
+        <p>Kurssin status: {{ course_statistics[4] }}</p>
 
         <p><a href="/course/{{ course[0] }}/exercises">Kurssin tehtävät</a></p>
 

@@ -34,7 +34,7 @@ def register(username, password, usertype):
         return False
     return login(username, password)
 
-def user_id():
+def get_user_id():
     return session.get("user_id", 0)
 
 def get_usertype():
