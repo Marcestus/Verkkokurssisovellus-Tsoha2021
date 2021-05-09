@@ -1,9 +1,6 @@
 from db import db
 import courses, statistics
 
-
-#Täällä vois olla osa sellaisia, että voisi siirtää omaan statistics.py -tiedostoon?
-
 def save_answers(user_id, course_id, exercise_type, answers):
     try:
         for answer in answers:
@@ -72,15 +69,3 @@ def get_all_answers(user_id, course_id, exercise_type):
     result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id, "exercise_type":exercise_type})
     all_answers = [(item[0],item[1]) for item in result.fetchall()]
     return all_answers
-
-
-
-
-
-#Siirrettäviä
-
-
-
-
-
-

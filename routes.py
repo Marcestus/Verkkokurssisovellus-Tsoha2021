@@ -2,14 +2,50 @@ from app import app
 from flask import render_template, request, redirect, session
 import users, courses, coursematerials, exercises, answers, statistics
 
+# Kirjautumiseen liittyvät
 
-# Sivuja
+@app.route("/login", methods=["get", "post"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html")
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        if users.login(username, password):
+            return redirect("/")
+        else:
+            return render_template("error.html", message="Väärä tunnus tai salasana")
+
+@app.route("/logout")
+def logout():
+    users.logout()
+    return redirect("/")
+
+@app.route("/register", methods=["get", "post"])
+def register():
+    if request.method == "GET":
+        return render_template("register.html")
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        usertype = request.form["usertype"]
+        password_again = request.form["password_again"]
+        if password != password_again:
+            return render_template("error.html", message="Salasanat eivät täsmää, koita uudestaan!")
+        if users.register(username, password, usertype):
+            return redirect("/")
+        else:
+            return render_template("error.html", message="Rekisteröinti ei onnistunut, tunnus saattaa olla jo käytössä...")
+
+
+# Sovelluksen sivut
 
 @app.route("/")
 def index():
+    user_id = users.get_user_id()
     if users.get_usertype() == 1:
-        open_courses_teacher = courses.get_open_courses_teacher()
-        unpublished_courses = courses.get_unpublished_courses()
+        open_courses_teacher = courses.get_open_courses_teacher(user_id)
+        unpublished_courses = courses.get_unpublished_courses(user_id)
         course_statistics = []
         for course in open_courses_teacher:
             student_amount = statistics.get_students(course[0])
@@ -22,15 +58,15 @@ def index():
             course_statistics.append(course_stats)
         return render_template("index.html", open_courses_teacher=open_courses_teacher, unpublished_courses=unpublished_courses, course_statistics=course_statistics)
     elif users.get_usertype() == 2:
-        completed_courses = courses.get_completed_courses()
-        uncompleted_courses = courses.get_uncompleted_courses()
-        open_courses = courses.get_open_courses()
+        completed_courses = courses.get_completed_courses(user_id)
+        uncompleted_courses = courses.get_uncompleted_courses(user_id)
+        open_courses = courses.get_open_courses(user_id)
         return render_template("index.html", completed_courses=completed_courses, uncompleted_courses=uncompleted_courses, open_courses=open_courses)
     else:
         return render_template("index.html")
 
-@app.route("/course/<int:id>", methods=["get", "post"])
-def course_page(id):
+@app.route("/course/<int:course_id>", methods=["get", "post"])
+def course_page(course_id):
     user_id = users.get_user_id()
     if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
@@ -41,7 +77,7 @@ def course_page(id):
             abort(403)
         update_type = request.form["update_type"]
         if update_type == "intro_update":
-            if not courses.update_intro(id, request.form["content"]):
+            if not courses.update_intro(course_id, request.form["content"]):
                 fail = True
         if update_type == "material_update":
             if not coursematerials.update_material(request.form["material_id"], request.form["title"], request.form["content"]):
@@ -49,14 +85,14 @@ def course_page(id):
     if fail:
         return render_template("error.html", message="Kurssimateriaalin päivittäminen ei onnistunut!")
     else:
-        course = courses.get_course(id)
+        course = courses.get_course(course_id)
         course_published = course[5]
         course_visible = course[6]
-        course_owner = courses.check_for_ownership(user_id, id)
-        coursematerial = coursematerials.get_all_coursematerials(id)
-        course_statistics = statistics.get_course_status(user_id, id)
+        course_owner = courses.check_for_ownership(user_id, course_id)
+        coursematerial = coursematerials.get_all_coursematerials(course_id)
+        course_statistics = statistics.get_course_status(user_id, course_id)
         no_material = (len(coursematerial) == 0)
-        no_more_material = (coursematerials.get_amount_of_material_slots(id) == 10)
+        no_more_material = (coursematerials.get_amount_of_material_slots(course_id) == 10)
         return render_template("course.html", course=course, course_published=course_published, course_visible=course_visible, course_owner=course_owner,
             coursematerial=coursematerial, course_statistics=course_statistics, no_material=no_material, no_more_material=no_more_material)
 
@@ -82,7 +118,7 @@ def exercise_page(id):
                 request.form["right_text"], request.form["right_feedback"], request.form["false_feedback"]):
                 fail = True
     if fail:
-        return render_template("error.html", message="Tehtävän lisääminen epäonnistui!")
+        return render_template("error.html", message="Tehtävän lisääminen ei onnistunut!")
     else:
         course = courses.get_course(id)
         quiz_exercises = exercises.get_all_quiz_exercises(id)
@@ -94,14 +130,13 @@ def exercise_page(id):
 
         no_quizzes = (len(quizzes_and_choises) == 0)
         no_text_exercises = (len(text_exercises) == 0)
-        course_published = course[5]
         course_visible = course[6]
+        course_published = course[5]
         course_owner = courses.check_for_ownership(user_id, id)
         student_signedup = courses.check_for_signup(user_id, id)
 
         all_quizzes_answered = statistics.all_exercises_answered(user_id, id, 1)
         all_text_exercises_answered = statistics.all_exercises_answered(user_id, id, 2)
-        
         course_statistics = statistics.get_course_status(user_id, id)
 
         correct_quiz_answers = []
@@ -134,7 +169,7 @@ def newcourse():
         abort(403)
     
     coursename = request.form["coursename"]
-    if courses.create_new(coursename):
+    if courses.create_new(user_id, coursename):
         return redirect("/")
     else:
         return render_template("error.html", message="Kurssin lisääminen ei onnistunut, kurssin nimi saattaa jo olla käytössä...")
@@ -236,15 +271,17 @@ def hide_course(course_id):
     return redirect("/")
 
 
-# Opiskelijan toimintoja
+# Opiskelijan toiminnot
 
-@app.route("/signup/<int:id>")
-def signup(id):
+@app.route("/signup/<int:course_id>")
+def signup(course_id):
     user_id = users.get_user_id()
     if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään nähdäksesi sisältöä!")
-    
-    if courses.signup_to_course(id):
+    if users.get_usertype() != 2:
+        return render_template("error.html", message="Vain opiskelijat voivat ilmoittautua kursseille!")
+
+    if courses.signup_to_course(user_id, course_id):
         return redirect("/")
     else:
         return render_template("error.html", message="Kurssille ilmoittautuminen ei onnistunut")
@@ -277,39 +314,3 @@ def answer_to_exercises():
         return redirect(f"/course/{course_id}/exercises")
     else:
         return render_template("error.html", message="Vastausten tallentaminen ei onnistunut!")
-
-
-# Kirjautumiseen liittyvät
-
-@app.route("/login", methods=["get", "post"])
-def login():
-    if request.method == "GET":
-        return render_template("login.html")
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if users.login(username, password):
-            return redirect("/")
-        else:
-            return render_template("error.html", message="Väärä tunnus tai salasana")
-
-@app.route("/logout")
-def logout():
-    users.logout()
-    return redirect("/")
-
-@app.route("/register", methods=["get", "post"])
-def register():
-    if request.method == "GET":
-        return render_template("register.html")
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        usertype = request.form["usertype"]
-        password_again = request.form["password_again"]
-        if password != password_again:
-            return render_template("error.html", message="Salasanat eivät täsmää, koita uudestaan!")
-        if users.register(username, password, usertype):
-            return redirect("/")
-        else:
-            return render_template("error.html", message="Rekisteröinti ei onnistunut, tunnus saattaa olla jo käytössä...")

@@ -1,6 +1,5 @@
 from db import db
 import random
-import courses
 
 def hide_exercise(exercise_id):
     try:

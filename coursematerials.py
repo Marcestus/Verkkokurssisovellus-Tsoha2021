@@ -1,5 +1,4 @@
 from db import db
-import courses
 
 def get_material(material_id):
     sql = "SELECT id, material_title, material_content FROM Coursematerials WHERE id=:material_id"
@@ -22,6 +21,26 @@ def get_ordervalue(material_id):
     result = db.session.execute(sql, {"material_id":material_id})
     ordervalue = result.fetchone()
     return ordervalue[0]
+
+def add_material(course_id, material_id, ordervalue):
+    title = "Väliotsikko"
+    text = "Lisää materiaali tähän"
+    try:
+        sql = "INSERT INTO Coursematerials (course_id, material_order, material_title, material_content) VALUES (:course_id, :ordervalue, :title, :text)"
+        db.session.execute(sql, {"course_id":course_id, "ordervalue":ordervalue, "title":title, "text":text})
+        db.session.commit()
+    except:
+        return False
+    return True
+
+def delete_material(course_id, material_id):
+    try:
+        sql = "DELETE FROM Coursematerials WHERE id=:material_id"
+        db.session.execute(sql, {"material_id":material_id})
+        db.session.commit()
+    except:
+        return False
+    return True
 
 def update_material(material_id, title, text):
     try:
@@ -51,26 +70,6 @@ def modify_material_order(course_id, material_id, modify_type):
     else:
         return False
     return False
-
-def add_material(course_id, material_id, ordervalue):
-    title = "Väliotsikko"
-    text = "Lisää materiaali tähän"
-    try:
-        sql = "INSERT INTO Coursematerials (course_id, material_order, material_title, material_content) VALUES (:course_id, :ordervalue, :title, :text)"
-        db.session.execute(sql, {"course_id":course_id, "ordervalue":ordervalue, "title":title, "text":text})
-        db.session.commit()
-    except:
-        return False
-    return True
-
-def delete_material(course_id, material_id):
-    try:
-        sql = "DELETE FROM Coursematerials WHERE id=:material_id"
-        db.session.execute(sql, {"material_id":material_id})
-        db.session.commit()
-    except:
-        return False
-    return True
     
 def update_ordervalues(course_id, material_id, modify_type):
     if modify_type == "add_middle":
