@@ -6,9 +6,18 @@
     
     {% if session.usertype == 1 %}
 
-        <p>Omat kurssit:</p>
-        {% for owned_course in owned_courses %}
-            <a href="/course/{{ owned_course[0] }}">{{ owned_course[1] }}</a> <br>
+        <p>Käynnissä olevat kurssit</p>
+        {% for course in open_courses_teacher %}
+            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <a href="/hide/{{ course[0] }}">Poista</a> <br>
+        {% endfor %}
+
+        <hr>
+
+        <p>Julkaisemattomat kurssit</p>
+        {% for course in unpublished_courses %}
+            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <a href="/publish/{{ course[0] }}">Julkaise</a> <br>
         {% endfor %}
 
         <hr>
@@ -25,17 +34,24 @@
 
     {% if session.usertype == 2 %}
 
-        <p>Kurssit, joille olet ilmoittautunut:</p>
-        {% for users_course in users_courses %}
-            <a href="/course/{{ users_course[0] }}">{{ users_course[1] }}</a> <br>
+        <p>Keskeneräiset kurssit</p>
+        {% for course in uncompleted_courses %}
+            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+        {% endfor %}
+        
+        <hr>
+
+        <p>Avoimet kurssit</p>
+        {% for course in open_courses %}
+            <a href="/course/{{ course[0] }}">{{ course[1] }}</a>
+            <a href="/signup/{{ course[0] }}">Ilmoittaudu kurssille</a> <br>
         {% endfor %}
 
         <hr>
 
-        <p>Muut avoimet kurssit:</p>
-        {% for open_course in open_courses %}
-            <a href="/course/{{ open_course[0] }}">{{ open_course[1] }}</a>
-            <a href="/signup/{{ open_course[0] }}">Ilmoittaudu kurssille</a> <br>
+        <p>Valmiit kurssit</p>
+        {% for course in completed_courses %}
+            <a href="/course/{{ course[0] }}">{{ course[1] }}</a> <br>
         {% endfor %}
 
         <hr>

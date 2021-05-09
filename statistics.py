@@ -6,12 +6,16 @@ def course_already_passed(user_id, course_id):
     return result.fetchone() != None
 
 def get_max_points(course_id):
-    sql = "SELECT SUM(points) FROM Exercises WHERE course_id=:course_id"
+    sql = "SELECT SUM(points) FROM Exercises WHERE course_id=:course_id AND visible=TRUE"
     result = db.session.execute(sql, {"course_id":course_id})
-    return result.fetchone()[0]
+    max_points = result.fetchone()[0]
+    if max_points == None:
+        return 0
+    else:
+        return max_points
 
 def get_user_points(user_id, course_id):
-    sql = "SELECT SUM(points) FROM Exercises WHERE course_id=:course_id AND id IN (SELECT exercise_id FROM Answers WHERE student_id=:user_id AND answer_right=TRUE)"
+    sql = "SELECT SUM(points) FROM Exercises WHERE course_id=:course_id AND visible=TRUE AND id IN (SELECT exercise_id FROM Answers WHERE student_id=:user_id AND answer_right=TRUE)"
     result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id})
     return result.fetchone()[0]
 
@@ -21,7 +25,12 @@ def get_passgrade(course_id):
     return result.fetchone()[0]
 
 def get_passgrade_in_points(course_id):
-    return 1 #int(get_max_points(course_id))*int((get_passgrade(course_id)/100)) + 1
+    max_points = get_max_points(course_id)
+    if max_points == 0:
+        return 0
+    passgrade_as_decimal = get_passgrade(course_id) / 100
+    passgrade_as_points = int(max_points * passgrade_as_decimal) + 1
+    return passgrade_as_points
 
 def points_enough_to_pass(user_id, course_id):
     user_points = get_user_points(user_id, course_id)

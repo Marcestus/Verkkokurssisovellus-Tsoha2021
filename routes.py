@@ -9,12 +9,14 @@ import users, courses, coursematerials, exercises, answers, statistics
 def index():
     # Suojaus: tehty html-puolella, pitänee siirtää toiminnallisuudet tänne?
     if users.get_usertype() == 1:
-        owned_courses = courses.owned_courses()
-        return render_template("index.html", owned_courses=owned_courses)
+        open_courses_teacher = courses.get_open_courses_teacher()
+        unpublished_courses = courses.get_unpublished_courses()
+        return render_template("index.html", open_courses_teacher=open_courses_teacher, unpublished_courses=unpublished_courses)
     elif users.get_usertype() == 2:
-        users_courses = courses.users_courses()
-        open_courses = courses.open_courses()
-        return render_template("index.html",users_courses=users_courses, open_courses=open_courses)
+        completed_courses = courses.get_completed_courses()
+        uncompleted_courses = courses.get_uncompleted_courses()
+        open_courses = courses.get_open_courses()
+        return render_template("index.html", completed_courses=completed_courses, uncompleted_courses=uncompleted_courses, open_courses=open_courses)
     else:
         return render_template("index.html")
 
@@ -24,7 +26,6 @@ def course_page(id):
     # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
     fail = False
     if request.method == "POST":
-        # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         update_type = request.form["update_type"]
@@ -53,7 +54,6 @@ def exercise_page(id):
     # Suojaus: vain kurssin omistava opettaja saa päästä omistamalleen (muokkaus)sivulle
     fail = False
     if request.method == "POST":
-        # Tässä ei ole tarkoituksella syötteen rajoitteita kurssimateriaalille (ainakaan vielä)
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         exercise_type = int(request.form["exercise_type"])
@@ -156,6 +156,20 @@ def modify_coursematerial_order(course_id, material_id, modify_type):
     else:
         return render_template("error.html", message="Materiaalin lisääminen ei onnistunut!")
 
+@app.route("/hide/<int:course_id>/<int:exercise_id>")
+def hide_exercise(course_id, exercise_id):
+    exercises.hide_exercise(exercise_id)
+    return redirect("f/course/{course_id}/exercises")
+
+@app.route("/publish/<int:course_id>")
+def publish_course(course_id):
+    courses.publish_course(course_id)
+    return redirect("/")
+
+@app.route("/hide/<int:course_id>")
+def hide_course(course_id):
+    courses.hide_course(course_id)
+    return redirect("/")
 
 # Opiskelijan toimintoja
 

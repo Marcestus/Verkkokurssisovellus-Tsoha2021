@@ -2,13 +2,14 @@ from db import db
 import random
 import courses
 
-def update_exercise():
-    # jos joku on jo ratkonut tehtävän, sitä ei voi enää päivittää
-    print("Sukka")
-
-def delete_exercise():
-    # jos joku on jo ratkonut tehtävän, sitä ei voi enää poistaa
-    print("Sukka")
+def hide_exercise(exercise_id):
+    try:
+        sql = "UPDATE Exercises SET visible=FALSE WHERE id=:exercise_id"
+        db.session.execute(sql, {"exercise_id":exercise_id})
+        db.session.commit()
+    except:
+        return False
+    return True
 
 def add_quiz_exercise(course_id, exercisetype, points, question, right_feedback, false_feedback, right_choice, wrong_choices):
     try:
@@ -37,7 +38,7 @@ def add_text_exercise(course_id, exercisetype, points, question, right_text, rig
 
 def get_all_quiz_exercises(course_id):
     exercisetype = 1
-    sql = "SELECT id, points, question, right_feedback, false_feedback FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercisetype"
+    sql = "SELECT id, points, question, right_feedback, false_feedback FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercisetype AND visible=TRUE"
     result = db.session.execute(sql, {"course_id":course_id, "exercisetype":exercisetype})
     random_order = result.fetchall()
     return random.sample(random_order, len(random_order))
@@ -50,12 +51,12 @@ def get_all_choises(quiz_id):
 
 def get_all_text_exercises(course_id):
     exercisetype = 2
-    sql = "SELECT id, points, question, right_text, right_feedback, false_feedback FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercisetype"
+    sql = "SELECT id, points, question, right_text, right_feedback, false_feedback FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercisetype AND VISIBLE=TRUE"
     result = db.session.execute(sql, {"course_id":course_id, "exercisetype":exercisetype})
     random_order = result.fetchall()
     return random.sample(random_order, len(random_order))
 
 def get_amount_of_exercises(course_id):
-    sql = "SELECT COUNT(*) FROM Exercises WHERE course_id=:course_id"
+    sql = "SELECT COUNT(*) FROM Exercises WHERE course_id=:course_id AND VISIBLE=TRUE"
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchone()[0]

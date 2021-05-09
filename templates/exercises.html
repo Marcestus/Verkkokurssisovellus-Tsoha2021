@@ -6,10 +6,8 @@
     {% if session.usertype == 1 %}
 
         <h1>{{course[1]}}</h1>
-
         <p>Geneeristä ohjeistusta tehtäviin?</p>
         <p>Esim. tekstikenttävastauksen pitää olla tismalleen oikein</p>
-
 
         <hr>
 
@@ -25,32 +23,23 @@
         <hr>
 
         {% if no_quizzes %}
-        
             <p>Ei monivalintatehtäviä!</p>
-
             <hr>
 
         {% else %}
 
             {% for quiz in quizzes_and_choises %}
-
-                Pisteet: {{ quiz[0][1] }}
-                Kysymys: {{ quiz[0][2] }}
-                
-                <p>
+                <p>Pisteet: {{ quiz[0][1] }}</p>
+                <p>Kysymys: {{ quiz[0][2] }}</p>
                 
                 {% for choice in quiz[1] %}
                     <input type="radio" name="choice" value="{{ choice }}" disabled>{{ choice[2] }}<br>
                 {% endfor %}
-                
-                <p>
-                
+                <a href="/hide/{{ course[0] }}/{{ quiz[0][0] }}">Poista</a>
                 <hr>
-
             {% endfor %}
 
             <p>Opettaja-roolissa ei voi vastata tehtäviin</p>
-
             <hr>
         
         {% endif %}
@@ -79,21 +68,17 @@
         <hr>
 
         {% if no_text_exercises %}
-
             <p>Ei tekstikenttätehtäviä!</p>
-
             <hr>
 
         {% else %}
 
             {% for text in text_exercises %}
-                Pisteet: {{ text[1] }}
-                Kysymys: {{ text[2] }}
-                
+                <p>Pisteet: {{ text[1] }}</p>
+                <p>Kysymys: {{ text[2] }}</p>
                 <p>Vastaus: <input type="text" name="answer" disabled><br></p>
-                
+                <a href="/hide/{{ course[0] }}/{{ text[0] }}">Poista</a>
                 <hr>
-
             {% endfor %}
 
             <p>Opettaja-roolissa ei voi vastata tehtäviin</p>
@@ -104,7 +89,6 @@
 
         {% if not all_exercise_slots_used %}
             <h3>Lisää tekstikenttätehtävä</h3>
-            <p></p>
             <form action="/course/{{ course[0] }}/exercises" method="POST">
                 <p>Pisteet: <input type="number" name="points" value="1" min="1" max="10" required> (1-10 pistettä)</p>
                 <p>Kysymys: <input type="text" name="question" maxlength="500" required> (max 500 merkkiä)</p>
@@ -127,7 +111,6 @@
     {% if session.usertype == 2 %}
 
         <h1>{{course[1]}}</h1>
-
         <p>Geneeristä ohjeistusta tehtäviin?</p>
 
         <hr>
@@ -144,61 +127,49 @@
         <hr>
 
         {% if no_quizzes %}
-        
             <p>Ei monivalintatehtäviä!</p>
-
             <hr>
-
         {% else %}
 
             <form action="/answer_to_exercises" method="post">
                 {% for quiz in quizzes_and_choises %}
-                    Pisteet: {{ quiz[0][1] }}
-                    Kysymys: {{ quiz[0][2] }}
-                    
-                    <p>
+                    <p>Pisteet: {{ quiz[0][1] }}</p>
+                    <p>Kysymys: {{ quiz[0][2] }}</p>
                     
                     {% for choice in quiz[1] %}
-                    
                         {% if all_quizzes_answered %}
                             {% if (quiz[0][0],choice[0]) in all_quiz_answers and choice[3] == True %}
                                 <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" checked disabled>{{ choice[2] }} - Oikein!<br>
                             {% elif (quiz[0][0],choice[0]) in all_quiz_answers and choice[3] == False %}
-                                <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" checked disabled>{{ choice[2] }} - Väärin! <br>
+                                <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" checked disabled>{{ choice[2] }} - Väärin!<br>
                             {% else %}
                                 <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" disabled>{{ choice[2] }}<br>
                             {% endif %}
                         {% else %}
                             <input type="radio" name="choice_{{ quiz[0][0] }}" value="{{ choice }}" required>{{ choice[2] }}<br>
                         {% endif %}
-                        
-                        
                     {% endfor %}
                     
                     {% if all_quizzes_answered %}
-
                         {% if quiz[0][0] in correct_quiz_answers[0] %}
                             <p>{{ quiz[0][3] }}</p>
                         {% else %}
                             <p>{{ quiz[0][4] }}</p>
                         {% endif %}    
                     {% endif %}
-
-                    <p>
-                    
-                    <hr>
                     <input type="hidden" name="quizzes" value="{{ quiz[0][0] }}">
+                    <hr>
                 {% endfor %}
+
                 {% if all_quizzes_answered %}
                     <p>Olet jo vastannut</p>
                 {% else %}
                     <input type="submit" value="Lähetä vastaukset"> <br>
                 {% endif %}
-                
+
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="hidden" name="course_id" value="{{ course[0] }}">
                 <input type="hidden" name="exercise_type" value="1">
-                
             </form>
         
         {% endif %}
@@ -219,9 +190,8 @@
 
             <form action="/answer_to_exercises" method="post">
                 {% for text_question in text_exercises %}
-
-                    Pisteet: {{ text_question[1] }}
-                    Kysymys: {{ text_question[2] }}
+                    <p>Pisteet: {{ text_question[1] }}</p>
+                    <p>Kysymys: {{ text_question[2] }}</p>
 
                     {% if all_text_exercises_answered %}
                         {% for answers in all_text_exercise_answers %}

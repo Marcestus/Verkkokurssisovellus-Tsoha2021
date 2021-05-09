@@ -57,18 +57,18 @@ def mark_course_as_passed(user_id, course_id):
 
 def get_correct_answers(user_id, course_id, exercise_type):
     if exercise_type == 1:
-        sql = "SELECT exercise_id, choice_id FROM Answers WHERE student_id=:user_id AND answer_right=TRUE AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type)"
+        sql = "SELECT exercise_id, choice_id FROM Answers WHERE student_id=:user_id AND answer_right=TRUE AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type AND visible=TRUE)"
     if exercise_type == 2:
-        sql = "SELECT exercise_id, text_answer FROM Answers WHERE student_id=:user_id AND answer_right=TRUE AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type)"
+        sql = "SELECT exercise_id, text_answer FROM Answers WHERE student_id=:user_id AND answer_right=TRUE AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type AND visible=TRUE)"
     result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id, "exercise_type":exercise_type})
     correct_answers = [(item[0],item[1]) for item in result.fetchall()]
     return correct_answers
 
 def get_all_answers(user_id, course_id, exercise_type):
     if exercise_type == 1:
-        sql = "SELECT exercise_id, choice_id FROM Answers WHERE student_id=:user_id AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type)"
+        sql = "SELECT exercise_id, choice_id FROM Answers WHERE student_id=:user_id AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type AND visible=TRUE)"
     if exercise_type == 2:
-        sql = "SELECT exercise_id, text_answer FROM Answers WHERE student_id=:user_id AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type)"
+        sql = "SELECT exercise_id, text_answer FROM Answers WHERE student_id=:user_id AND exercise_id IN (SELECT id FROM Exercises WHERE course_id=:course_id AND exercisetype=:exercise_type AND visible=TRUE)"
     result = db.session.execute(sql, {"user_id":user_id, "course_id":course_id, "exercise_type":exercise_type})
     all_answers = [(item[0],item[1]) for item in result.fetchall()]
     return all_answers

@@ -14,7 +14,9 @@ CREATE TABLE Courses (
     coursename TEXT UNIQUE,
     owner_id INTEGER REFERENCES Users,
     passgrade INTEGER DEFAULT 70,
-    course_intro TEXT DEFAULT 'Kurssin johdanto'
+    course_intro TEXT DEFAULT 'Kurssin johdanto',
+    published BOOLEAN DEFAULT FALSE,
+    visible BOOLEAN DEFAULT TRUE
 );
 CREATE TABLE Participants (
     student_id INTEGER REFERENCES users,
@@ -38,10 +40,11 @@ CREATE TABLE Exercises (
     course_id INTEGER REFERENCES Courses,
     exercisetype INTEGER REFERENCES Exercisetypes,
     points INTEGER,
-    question TEXT NOT NULL,
+    question TEXT,
     right_text TEXT,
     right_feedback TEXT,
-    false_feedback TEXT
+    false_feedback TEXT,
+    visible BOOLEAN DEFAULT TRUE
 );
 CREATE TABLE Choices (
     id SERIAL PRIMARY KEY,
